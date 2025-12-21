@@ -1,0 +1,16 @@
+{
+  "wall_s": 1.9198553562164307,
+  "ndofs_u": 26548,
+  "ndofs_h": 13274,
+  "notes": {
+    "dirichlet_ids": [
+      1
+    ],
+    "R": 200000.0,
+    "dx": 5000.0,
+    "temperature_K": 255.15,
+    "fluidity_scale": 1.6,
+    "num_timesteps": 0,
+    "final_time": 0.0
+  }
+}

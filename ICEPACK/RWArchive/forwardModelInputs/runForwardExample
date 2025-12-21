@@ -1,0 +1,39 @@
+#!/bin/csh
+#
+# This script will run an inversion in this directory. Edit env variabile degree to either 1 or 2.
+# Icepack/firedrake must be installed and the firedrake environment must be activated.
+# https://icepack.github.io/
+# The forward code is at
+# https://github.com/fastice/icesheetModels
+# and will require
+# https://github.com/fastice/modelfunc
+#
+# Increasing the number of threads will use more CPU, but not increase speed.
+export OMP_NUM_THREADS=1
+export degree=1
+#
+# File with melt parameters
+export meltFile=../randomMeltFunctions/randomMelt.57GT.yaml
+# Select first set of random parameters, 1, 2,... for others
+export meltParams=random_0
+# directory for the outputs for this model run.
+# the outputs consist of three summary plots (*.png), a yaml file with the inputs, a yaml file with some summary variables.
+# The geometry and velocity at annual time steps is recorded in an h5 (hdf5 file) (use firedrake/icepack routines - see also reader in modelfunc).
+export outputDir=forwardrun.melt000.57Gt
+#
+# SMB File. Note file path was originally hard coded in the model used for the papers. The code was updated 2/25/21 to allow the SMB file path
+# to be specified as an option.
+export SMB=OLS_Trend_plus_Resid_9b9.tif
+#
+# Output from the inversion with no deg?.h5 or deg?yaml suffix (the program will insert the correct degree or will fail if it does not exist)
+# The inversion needs to be run before the forward model.
+# export inputFile=../inversionInputs/pig.alpha200.RCF.B2020RB5T1000.inversion
+export inputFile=../inversionInputs/pig.alpha200.RCF.B2020RB5T1000.inversion.deg1
+# run model for 200 years with this time step the model will run in about 12 hours, changing to degree 2 will take 4-6x longer.
+# For multi-realization simulations can be run simulataneously with a python script that threads this command.
+# The degree 1 simulations are not too different from the degree 2 results. So its good to run degree 1 first for debugging, then run final results with deg 2.
+python PigForward.py --SMB $SMB --deltaT 0.05 --meltParams $meltParams --meltParamsFile $meltFile  --degree $degree --nYears 200 $inputFile $outputDir
+#
+
+
+

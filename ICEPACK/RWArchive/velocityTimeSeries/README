@@ -1,0 +1,21 @@
+This directory contains the velocity time series data plotted in both papers.
+The region covers the main trunk of PIG.
+
+The earlier data (VelPIG.TSX.20YY-MM-DD.v?.tif) are derived from TerraSAR-X data.
+The date in the file name gives the central date for the estimate, which was derived
+from data that span a range of several months about this date. Because of the limited
+extent of TSX images, maps are not full coverage.
+
+The later data (VelPIG.S1Quarterly.20YY-MM-DD.v?.tif) are derived from Copernicus
+Sentinel 1A/B data, which are derived from images processed by ESA and
+distributed by ASF). The estimates are computed quarterly so the data used to
+produce them span the 3-month period centered on the date in the file name.
+The coverage is more complete, although gaps remain where good speckle
+tracking matches were not possible (the Amundsen Sea Embayment is one
+of the more challenging areas for speckle tracking due to the high accumulation rates). 
+
+Each product consists of 2 geotifs with epsg 3031 (NSIDC Polar Stereographic for Antarctica),
+containing the vx and vy velocity components.
+
+The paper: Ice-Shelf Retreat Drives Recent Pine Island Glacier Speedup
+(in revision at Science Advances), when it is published should serve as the reference for these data.

@@ -1,0 +1,18 @@
+These are the ice thickness and and shelf masks used to estimate thinning
+rates used in the melt calculation described in the Supplement to
+"Ocean-Induced Melt Volume Directly Paces Ice Loss from Pine Island Glacier"
+
+The thickness (thickness.20??.tif)  is derived from hydrostatic equilibrium
+applied to a series of elevation maps referenced to the EGM2008 ellipsoid
+(zsurf.20??.egm2008.tif).
+
+The shelf mask (shelf.20??.tif)  is determined from regions where the surface
+elevation exceeds the height above flotation based on pigmcbed.adjusted.2017.tif.
+
+The elevations are an updated version of the data described in Regularized
+Coulomb Friction Laws for Ice Sheet Sliding: Application to Pine Island Glacier, Antarctica
+Ian Joughin  Benjamin E. Smith  Christian G. Schoof, https://doi.org/10.1029/2019GL082526
+
+All file are geotifs with epsg 3031 (NSIDC Polar Stereographic for Antarctica).
+
+

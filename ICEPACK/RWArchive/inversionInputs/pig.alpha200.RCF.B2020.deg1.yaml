@@ -1,0 +1,14 @@
+inversionParams:
+  degree: 1
+  friction: schoof
+  geometry: PigGeometry2017-BM2.yaml
+  initWithDeg1: false
+  inversionResult: test
+  maxSteps: 30
+  mesh: ../meshes/PigFull2017GeomFull.exp
+  plotResult: false
+  rheology: PIG2020.B.tif
+  rtol: 0.0005
+  uThresh: 300
+  alpha: 200
+  velocity: ASE2017

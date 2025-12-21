@@ -1,0 +1,9 @@
+This directory contains the data to run the forward model a script to do an example forward run
+
+OLS_Trend_plus_Resid_9b9.tif:  The SMB map from Medley et al., Cryosphere, 2014. in m/yr w.e. 
+
+runForwardExample*: A script to run a forward model example. It will take starting
+geometry from the inversion output, so the inversion must be run first. See script
+for more detail.
+
+

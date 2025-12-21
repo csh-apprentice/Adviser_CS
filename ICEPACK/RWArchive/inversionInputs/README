@@ -1,0 +1,24 @@
+This directory contains the data used to constrain the inversion, other inversion
+input files, and a script to run the inversion.
+
+ASE2017.vx.tif: vx component of velocity
+ASE2017.vy.tif: vy component of velocity
+ASE2017.ex.tif: ex component of error
+ASE2017.ey.tif: ey component of error
+
+PIG2020.B.tif: Rheology parameter B for grounded ice and initial condition for floating ice. 
+pig.alpha200.RCF.B2020.deg1.yaml: Initial set of parameters for the inversions, some
+of which can be overridden at the command line call (e.g., degree).
+
+PigGeometry2017-BM2.yaml: A file with links to inversion inputs.
+
+pigmcbed.adjusted.2017.tif: A version of bedmachine updated as described in the
+associated papers.
+
+shelf.2017.tif: A binary mask of floating and grounded regions.
+
+thickness.2017.tif: Ice thickness
+
+zsurf.2017.egm2008.tif: surface elevation
+
+runInv*: A script to run PigInversion.py with parameters used in paper.

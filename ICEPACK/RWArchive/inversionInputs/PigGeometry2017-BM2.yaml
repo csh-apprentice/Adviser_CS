@@ -1,0 +1,4 @@
+bed: ../inversionInputs/pigmcbed.adjusted.2017.tif
+floatMask: ../inversionInputs/shelf.2017.tif
+surface: ../inversionInputs/zsurf.2017.egm2008.tif
+thickness: ../inversionInputs/thickness.2017.tif

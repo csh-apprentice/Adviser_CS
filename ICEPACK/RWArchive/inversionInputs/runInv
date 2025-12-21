@@ -1,0 +1,14 @@
+#!/bin/csh
+#
+# This script will run an inversion in this directory. Edit env variabile degree to either 1 or 2.
+# Icepack/firedrake must be installed and the firedrake environment must be activated.
+# https://icepack.github.io/
+# The inversion code is at
+# https://github.com/fastice/icesheetModels
+# and will require
+# https://github.com/fastice/modelfunc
+#
+export OMP_NUM_THREADS=1
+export degree=1
+
+python PigInversion.py  --degree $degree --regTheta 5 --regBeta 5 --GLTaper 1000 --params pig.alpha200.RCF.B2020.deg1.yaml  pig.alpha200.RCF.B2020RB5T1000.inversion.deg$degree

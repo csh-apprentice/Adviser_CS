@@ -1,0 +1,17 @@
+This directory contains randomly generated melt parameters.
+
+Whether held constant in time or varying about a constant mean, the same set of
+realizations was used for each melt value (e.g., 100GT), which are indicated by
+the file names:
+
+randomMelt.100GT.yaml
+randomMelt.125GT.yaml
+randomMelt.57GT.yaml
+randomMelt.75GT.yaml
+
+The script readMelt.py illustrates how the files can be read and the melt computed.
+Note the results will be in a icepack/firedrake variable format.  
+
+For all of the simulations described in each paper, only the first 30 realizations were used.
+
+New realizations can be generated with the script in this directory computeMeltParams.py.

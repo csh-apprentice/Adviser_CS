@@ -1,0 +1,14 @@
+This directory contains the two meshes used for the model experiments described in
+both papers.
+
+The mesh were produced with the commercial package Argus
+(http://www.argusone.com/ArgusNumericalEnv.html).
+
+meshReadExample.py:  Sample reader (see master README for required github repositories).
+
+PigFull2017GeomFull.exp:  Mesh for 2017 shelf configuration
+PigFull2017GeomFull.yaml: Associated boundary conditions
+
+PigFull2020GeomFull.exp:  Mesh for 2020 shelf configuration
+PigFull2020GeomFull.yaml: Associated boundary conditions
+

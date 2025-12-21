@@ -1,0 +1,26 @@
+March 5, 2021
+This archive contains data related to two papers currently in revision or being prepared for submission.
+Paper 1) Ice-Shelf Retreat Drives Recent Pine Island Glacier Speedup (in revision at Science Advances)
+Paper 2) Ocean-Induced Melt Volume Directly Paces Ice Loss from Pine Island Glacier (inprep)
+
+Icepack/firedrake (https://icepack.github.io/). must be installed and the firedrake environment must be activated.
+The forward and inverse code is at: https://github.com/fastice/icesheetModels
+It will require:  https://github.com/fastice/modelfunc
+
+The results are in the following 6 directories
+
+forwardModelInputs: All of the inputs necessary to run the forward model (inversion must run first) and a sample run script.
+
+inversionInputs: All of the inputs necessary for the inversions along with an example script to run the inversions.
+
+meshes: meshes  and an example reader.
+
+randomMeltFunctions: This directory contains the .yaml files with the melt realizations parameters used in the simulation. Also included are example python routines to comptue the melt from the parameters and to generate new parameters. 
+
+velocityTimeSeries: This directory contains a times serio=es of velocity maps for the PIG trunk from which
+velocity points in the plots in this papers were extracted. 
+
+thicknessTimeSeries: This directory contains thickness, elevation, and shelf masks used to estimate
+annual ice shelf thinning rates from 2009 to 2017, which were averaged to yield an 8-year mean thinning
+rate of 9 Gt/yr (for the model domain) with standard deviation of 9 Gt/yr, which represents error and natural
+interannual variability (see Paper 2). 
