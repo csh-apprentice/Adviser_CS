@@ -20,6 +20,7 @@ python -m pip install gmsh
 
 pip install -e ./icepack
 pip install -e ./modelfunc
+pip install pyyaml siphash24
 
 # Make sure mpirun exists (needed on head at minimum; on some systems also needed on workers)
 # if ! command -v mpirun >/dev/null 2>&1; then
