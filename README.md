@@ -16,7 +16,7 @@ This script sets up the environment, installs required dependencies, and runs a 
   -- \
   bash -lc '
     set -euxo pipefail
-    git clone https://github.com/csh-apprentice/Adviser_CS.git
+    git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
     cd Adviser_CS/ICEPACK
     chmod +x run_casestudy.sh
     ./run_casestudy.sh
