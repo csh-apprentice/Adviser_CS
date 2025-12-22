@@ -32,8 +32,16 @@ done
 
 
 
+# for np in 1 2 4 8 16; do
+#   mpirun -np $np \
+#     python -m experiments.run_forward \
+#       --out adviser_output/mpi_np_${np} \
+#       --fluidity-scale 1.0 \
+#       --dx 4000
+# done
+
 for np in 1 2 4 8 16; do
-  mpirun -np $np \
+  mpiexec -n $np \
     python -m experiments.run_forward \
       --out adviser_output/mpi_np_${np} \
       --fluidity-scale 1.0 \

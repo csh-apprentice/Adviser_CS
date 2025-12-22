@@ -22,6 +22,7 @@ import json
 import gmsh
 import firedrake
 import icepack
+import os
 
 
 @dataclass
@@ -34,51 +35,85 @@ class RunStats:
 
 
 def make_mesh(out_dir: Path, R: float, dx: float) -> firedrake.Mesh:
+    """
+    MPI-robust mesh generator:
+      - Uses a filesystem lock so only one process runs gmsh + writes the .msh
+      - Other processes wait until the final .msh exists, then read it
+      - Avoids relying on COMM_WORLD.rank (important if MPI launcher is mismatched)
+    """
     out_dir.mkdir(parents=True, exist_ok=True)
 
     msh_path = out_dir / "ice-shelf.msh"
-    # IMPORTANT: temp file must still end with .msh so gmsh knows the format
-    tmp_path = out_dir / "ice-shelf.tmp.msh"
+    tmp_path = out_dir / "ice-shelf.tmp.msh"   # must end with .msh
+    lock_path = out_dir / "ice-shelf.msh.lock"
 
-    comm = firedrake.COMM_WORLD
-    rank = comm.rank
+    # Fast path: mesh already exists (e.g., rerun)
+    if msh_path.exists() and msh_path.stat().st_size > 0:
+        return firedrake.Mesh(str(msh_path))
 
-    if rank == 0:
-        gmsh.initialize()
-        gmsh.model.add("ice_shelf")
+    # Try to acquire exclusive lock (atomic)
+    have_lock = False
+    try:
+        fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        os.close(fd)
+        have_lock = True
+    except FileExistsError:
+        have_lock = False
+
+    if have_lock:
         try:
-            geometry = gmsh.model.geo
+            # Re-check in case someone created it between our checks (rare)
+            if not (msh_path.exists() and msh_path.stat().st_size > 0):
+                gmsh.initialize()
+                gmsh.model.add("ice_shelf")
+                try:
+                    geo = gmsh.model.geo
 
-            x1 = geometry.add_point(-R, 0, 0, dx)
-            x2 = geometry.add_point(+R, 0, 0, dx)
+                    x1 = geo.add_point(-R, 0, 0, dx)
+                    x2 = geo.add_point(+R, 0, 0, dx)
+                    center1 = geo.add_point(0, 0, 0, dx)
+                    center2 = geo.add_point(0, -4 * R, 0, dx)
 
-            center1 = geometry.add_point(0, 0, 0, dx)
-            center2 = geometry.add_point(0, -4 * R, 0, dx)
+                    arcs = [
+                        geo.add_circle_arc(x1, center1, x2),
+                        geo.add_circle_arc(x2, center2, x1),
+                    ]
 
-            arcs = [
-                geometry.add_circle_arc(x1, center1, x2),
-                geometry.add_circle_arc(x2, center2, x1),
-            ]
+                    loop = geo.add_curve_loop(arcs)
+                    surf = geo.add_plane_surface([loop])
 
-            line_loop = geometry.add_curve_loop(arcs)
-            plane_surface = geometry.add_plane_surface([line_loop])
+                    # IMPORTANT: synchronize before physical groups
+                    geo.synchronize()
 
-            # sync BEFORE physical groups
-            geometry.synchronize()
+                    gmsh.model.add_physical_group(1, [arcs[0]], tag=1)
+                    gmsh.model.add_physical_group(1, [arcs[1]], tag=2)
+                    gmsh.model.add_physical_group(2, [surf], tag=1)
 
-            gmsh.model.add_physical_group(1, [arcs[0]], tag=1)
-            gmsh.model.add_physical_group(1, [arcs[1]], tag=2)
-            gmsh.model.add_physical_group(2, [plane_surface], tag=1)
+                    gmsh.model.mesh.generate(2)
 
-            gmsh.model.mesh.generate(2)
+                    gmsh.write(str(tmp_path))
+                finally:
+                    gmsh.finalize()
 
-            gmsh.write(str(tmp_path))
+                # Atomic-ish publish step
+                tmp_path.replace(msh_path)
         finally:
-            gmsh.finalize()
+            # Release lock
+            try:
+                lock_path.unlink()
+            except FileNotFoundError:
+                pass
+    else:
+        # Wait for the writer to publish the mesh
+        # (don’t hang forever; fail loudly if something is wrong)
+        deadline = time.time() + 300  # 5 minutes
+        while time.time() < deadline:
+            if msh_path.exists() and msh_path.stat().st_size > 0:
+                break
+            time.sleep(0.1)
+        else:
+            raise RuntimeError(f"Timed out waiting for mesh file: {msh_path}")
 
-        tmp_path.replace(msh_path)
-
-    comm.barrier()
     return firedrake.Mesh(str(msh_path))
 
 
