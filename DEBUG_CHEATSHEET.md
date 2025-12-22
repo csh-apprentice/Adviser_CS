@@ -20,6 +20,8 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
   --cluster 1148 \
    --container-image-uri docker.io/firedrakeproject/firedrake-vanilla:2025-01 \
   "
+    set -euo pipefail
+    rm -rf Adviser_CS
     git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
     cd Adviser_CS/ICEPACK
     chmod +x run_inverse.sh
