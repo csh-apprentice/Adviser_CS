@@ -33,4 +33,12 @@ pip install -e ./modelfunc
 
 
 cd RWArchive/forwardModelInputs
-bash runForwardExample > forward_$(date +%Y%m%d_%H%M%S).log 2>&1
+# bash runForwardExample > forward_$(date +%Y%m%d_%H%M%S).log 2>&1
+log="forward_$(date +%Y%m%d_%H%M%S).log"
+
+bash runForwardExample >"$log" 2>&1 || {
+  rc=$?
+  echo "[run] FAILED (exit=$rc). Showing last 200 lines of $log:"
+  tail -n 200 "$log" || true
+  exit $rc
+}
