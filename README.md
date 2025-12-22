@@ -13,6 +13,7 @@ This script sets up the environment, installs required dependencies, and runs a 
 ./adviser run \
   --region us-west-2 \
   --instance-type c6i.4xlarge \
+  --container-image-uri docker.io/firedrakeproject/firedrake-vanilla:2025-01 \
   -- \
   bash -lc '
     set -euxo pipefail
