@@ -1,0 +1,6 @@
+[submodule "ICEPACK/icepack"]
+	path = ICEPACK/icepack
+	url = https://github.com/csh-apprentice/icepack.git
+[submodule "ICEPACK/modelfunc"]
+	path = ICEPACK/modelfunc
+	url = https://github.com/csh-apprentice/modelfunc.git
