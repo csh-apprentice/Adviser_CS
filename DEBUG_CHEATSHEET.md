@@ -25,3 +25,13 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
     chmod +x run_inverse.sh
     ./run_inverse.sh
   "
+
+
+./adviser run \
+  --cluster 1146 \
+  "
+    git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
+    cd Adviser_CS/ICEPACK
+    chmod +x run_inverse.sh
+    ./run_inverse.sh
+  "
