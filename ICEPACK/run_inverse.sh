@@ -3,10 +3,10 @@ set -euo pipefail
 
 echo "[Running] Run case study (cloud-safe MPI defaults)..."
 
-# ----------------------------
-# Helper: identify head node
-# ----------------------------
-NODE_RANK="${ADVISER_NODE_RANK:-0}"
+# # ----------------------------
+# # Helper: identify head node
+# # ----------------------------
+# NODE_RANK="${ADVISER_NODE_RANK:-0}"
 
 # ----------------------------
 # Environment setup (head + workers)
@@ -18,7 +18,7 @@ source /home/firedrake/firedrake/bin/activate
 python -m pip install --upgrade pip
 python -m pip install gmsh
 
-pip install -e ./icepack_latest
+pip install -e ./icepack
 pip install -e ./modelfunc
 
 # Make sure mpirun exists (needed on head at minimum; on some systems also needed on workers)
