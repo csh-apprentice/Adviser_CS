@@ -11,6 +11,9 @@ python -m pip install gmsh
 pip install -e ./icepack
 pip install -e ./modelfunc
 
+sudo apt-get update
+sudo apt-get install -y openmpi-bin
+
 cd casestudy
 for a in 0.3 0.5 0.7 1.0 1.3 1.6 2.0; do
   python -m experiments.run_forward \
