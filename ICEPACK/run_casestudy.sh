@@ -8,7 +8,7 @@ source /home/firedrake/firedrake/bin/activate
 python -m pip install --upgrade pip
 python -m pip install gmsh
 
-pip install -e ./icepack_latest
+pip install -e ./icepack
 pip install -e ./modelfunc
 
 cd casestudy
