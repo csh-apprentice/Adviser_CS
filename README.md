@@ -1,4 +1,4 @@
-# ICEPACK
+# ICEPACK & PISM CASESTUDY
 ## Icepack Case Study (Synthetic Ice Shelf)
 ICEPACK/casestuy contains a small, headless (non-notebook) Icepack/Firedrake workload that is designed for PEARC-style platform evaluation. The main entry point is the script:
 ```
