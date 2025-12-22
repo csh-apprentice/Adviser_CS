@@ -33,4 +33,5 @@ pip install -e ./modelfunc
 
 
 cd RWArchive/inversionInputs
-bash runInv > inversion_$(date +%Y%m%d_%H%M%S).log 2>&1
+# bash runInv > inversion_3_20.log 2>&1
+bash runInv
