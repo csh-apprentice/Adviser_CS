@@ -24,3 +24,7 @@ This script sets up the environment, installs required dependencies, and runs a 
   '
 
 ```
+
+## Pine Island Basin Scale Model
+
+https://github.com/fastice/icesheetModels
