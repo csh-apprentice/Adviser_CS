@@ -40,8 +40,12 @@ We follow the instructions in [icesheetModels](https://github.com/fastice/iceshe
     set -euxo pipefail
     git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
     cd Adviser_CS/ICEPACK
-    chmod +x run_casestudy.sh
-    ./run_casestudy.sh
+    chmod +x run_inverse.sh
+    ./run_inverse.sh
+    chmod +x run_forward.sh
+    ./run_forward.sh
   '
 
 ```
+
+# PISM

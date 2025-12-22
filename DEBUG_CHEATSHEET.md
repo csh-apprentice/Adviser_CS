@@ -17,7 +17,7 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
 
 
 ./adviser run \
-  --cluster 1147 \
+  --cluster 1148 \
    --container-image-uri docker.io/firedrakeproject/firedrake-vanilla:2025-01 \
   "
     git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
@@ -31,7 +31,7 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
   --cluster 1146 \
   "
     git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
-    cd Adviser_CS/ICEPACK
-    chmod +x run_inverse.sh
-    ./run_inverse.sh
+    cd Adviser_CS/PISM
+    chmod +x setup_pism.sh
+    ./setup_pism.sh
   "
