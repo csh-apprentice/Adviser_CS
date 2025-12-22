@@ -49,3 +49,19 @@ We follow the instructions in [icesheetModels](https://github.com/fastice/iceshe
 ```
 
 # PISM
+We follow the instructions in [PISM] first run (https://www.pism.io/docs/manual/std-greenland/run-1.html).
+```
+./adviser run \
+  --region us-west-2 \
+  --num-nodes 4 \
+  -- \
+  bash -lc '
+    git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
+    cd Adviser_CS/PISM
+    chmod +x setup_pism.sh
+    ./setup_pism.sh
+    chmod +x first_run_new.sh
+    ./first_run_new.sh
+  '
+
+```
