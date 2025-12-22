@@ -84,11 +84,20 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
   "
 
 ./adviser run \
-  --cluster 1153 \
-  --num-nodes 4 \
+  --cluster 1154 \
   "
     cp first_run_debug.sh Adviser_CS/PISM
     cd Adviser_CS/PISM
     chmod +x first_run_debug.sh
     ./first_run_debug.sh
   "
+
+./adviser run \
+  --cluster 1154 \
+  --num-nodes 4 \
+  "
+    cd Adviser_CS/PISM
+    chmod +x first_run_new.sh
+    ./first_run_new.sh
+  "
+
