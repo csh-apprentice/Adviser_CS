@@ -32,18 +32,13 @@ class RunStats:
     notes: Dict[str, Any]
 
 
-def make_mesh(out_dir: Path, R: float, dx: float) -> firedrake.Mesh:
-    """
-    Build a 2D "ice shelf" mesh using gmsh, matching the tutorial geometry:
-      - 2 circular arcs form a closed boundary
-      - each arc is a physical boundary id (1, 2)
-      - interior surface is physical region id (1)
 
-    MPI-safe: only rank 0 generates/writes the .msh; all ranks barrier before reading.
-    """
+def make_mesh(out_dir: Path, R: float, dx: float) -> firedrake.Mesh:
     out_dir.mkdir(parents=True, exist_ok=True)
+
     msh_path = out_dir / "ice-shelf.msh"
-    tmp_path = out_dir / "ice-shelf.msh.tmp"
+    # IMPORTANT: temp file must still end with .msh so gmsh knows the format
+    tmp_path = out_dir / "ice-shelf.tmp.msh"
 
     comm = firedrake.COMM_WORLD
     rank = comm.rank
@@ -68,28 +63,23 @@ def make_mesh(out_dir: Path, R: float, dx: float) -> firedrake.Mesh:
             line_loop = geometry.add_curve_loop(arcs)
             plane_surface = geometry.add_plane_surface([line_loop])
 
-            # IMPORTANT: synchronize geometry before defining physical groups
+            # sync BEFORE physical groups
             geometry.synchronize()
 
-            # Physical tags (stable ids)
-            gmsh.model.add_physical_group(1, [arcs[0]], tag=1)  # boundary id 1
-            gmsh.model.add_physical_group(1, [arcs[1]], tag=2)  # boundary id 2
-            gmsh.model.add_physical_group(2, [plane_surface], tag=1)  # region id 1
+            gmsh.model.add_physical_group(1, [arcs[0]], tag=1)
+            gmsh.model.add_physical_group(1, [arcs[1]], tag=2)
+            gmsh.model.add_physical_group(2, [plane_surface], tag=1)
 
             gmsh.model.mesh.generate(2)
 
-            # Write to a temp file then atomically replace
             gmsh.write(str(tmp_path))
         finally:
             gmsh.finalize()
 
         tmp_path.replace(msh_path)
 
-    # Ensure all ranks see a complete .msh file before reading
     comm.barrier()
-
-    mesh = firedrake.Mesh(str(msh_path))
-    return mesh
+    return firedrake.Mesh(str(msh_path))
 
 
 def build_initial_fields(mesh: firedrake.Mesh, R: float) -> Tuple[firedrake.Function, firedrake.Function]:
