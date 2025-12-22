@@ -10,12 +10,16 @@ This script sets up the environment, installs required dependencies, and runs a 
 
 
 ```
-./adviser run \ 
-  ---instance-type c6i.4xlarge\
-  "
-  git clone https://github.com/csh-apprentice/Adviser_CS.git
-  cd ICEPACK
+./adviser run \
+  --region us-west-2 \
+  --instance-type c6i.4xlarge \
+  -- \
+  bash -lc '
+    set -euxo pipefail
+    git clone https://github.com/csh-apprentice/Adviser_CS.git
+    cd Adviser_CS/ICEPACK
+    chmod +x run_casestudy.sh
+    ./run_casestudy.sh
+  '
 
-  chmod +x run_casestudy.sh && \
-  bash -lc './run_casestudy.sh' "
 ```
