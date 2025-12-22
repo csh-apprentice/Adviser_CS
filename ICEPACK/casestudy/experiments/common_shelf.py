@@ -39,42 +39,54 @@ def make_mesh(out_dir: Path, R: float, dx: float) -> firedrake.Mesh:
       - each arc is a physical boundary id (1, 2)
       - interior surface is physical region id (1)
 
-    Returns a Firedrake Mesh created from a .msh written into out_dir.
+    MPI-safe: only rank 0 generates/writes the .msh; all ranks barrier before reading.
     """
     out_dir.mkdir(parents=True, exist_ok=True)
     msh_path = out_dir / "ice-shelf.msh"
+    tmp_path = out_dir / "ice-shelf.msh.tmp"
 
-    gmsh.initialize()
-    gmsh.model.add('ice_shelf')
-    try:
-        geometry = gmsh.model.geo
+    comm = firedrake.COMM_WORLD
+    rank = comm.rank
 
-        x1 = geometry.add_point(-R, 0, 0, dx)
-        x2 = geometry.add_point(+R, 0, 0, dx)
+    if rank == 0:
+        gmsh.initialize()
+        gmsh.model.add("ice_shelf")
+        try:
+            geometry = gmsh.model.geo
 
-        center1 = geometry.add_point(0, 0, 0, dx)
-        center2 = geometry.add_point(0, -4 * R, 0, dx)
+            x1 = geometry.add_point(-R, 0, 0, dx)
+            x2 = geometry.add_point(+R, 0, 0, dx)
 
-        arcs = [
-            geometry.add_circle_arc(x1, center1, x2),
-            geometry.add_circle_arc(x2, center2, x1),
-        ]
+            center1 = geometry.add_point(0, 0, 0, dx)
+            center2 = geometry.add_point(0, -4 * R, 0, dx)
 
-        line_loop = geometry.add_curve_loop(arcs)
-        plane_surface = geometry.add_plane_surface([line_loop])
+            arcs = [
+                geometry.add_circle_arc(x1, center1, x2),
+                geometry.add_circle_arc(x2, center2, x1),
+            ]
 
-        # Physical tags. In gmsh, physical groups get integer ids.
-        # Icepack tutorial creates two physical lines (one per arc) and one physical surface.
-        # We deliberately assign explicit tags = 1 and 2 for lines, 1 for surface to be stable.
-        gmsh.model.add_physical_group(1, [arcs[0]], tag=1)  # boundary id 1 (often inflow)
-        gmsh.model.add_physical_group(1, [arcs[1]], tag=2)  # boundary id 2 (often outflow)
-        gmsh.model.add_physical_group(2, [plane_surface], tag=1)
+            line_loop = geometry.add_curve_loop(arcs)
+            plane_surface = geometry.add_plane_surface([line_loop])
 
-        geometry.synchronize()
-        gmsh.model.mesh.generate(2)
-        gmsh.write(str(msh_path))
-    finally:
-        gmsh.finalize()
+            # IMPORTANT: synchronize geometry before defining physical groups
+            geometry.synchronize()
+
+            # Physical tags (stable ids)
+            gmsh.model.add_physical_group(1, [arcs[0]], tag=1)  # boundary id 1
+            gmsh.model.add_physical_group(1, [arcs[1]], tag=2)  # boundary id 2
+            gmsh.model.add_physical_group(2, [plane_surface], tag=1)  # region id 1
+
+            gmsh.model.mesh.generate(2)
+
+            # Write to a temp file then atomically replace
+            gmsh.write(str(tmp_path))
+        finally:
+            gmsh.finalize()
+
+        tmp_path.replace(msh_path)
+
+    # Ensure all ranks see a complete .msh file before reading
+    comm.barrier()
 
     mesh = firedrake.Mesh(str(msh_path))
     return mesh
