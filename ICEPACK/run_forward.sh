@@ -22,13 +22,13 @@ pip install -e ./icepack
 pip install -e ./modelfunc
 
 # Make sure mpirun exists (needed on head at minimum; on some systems also needed on workers)
-if ! command -v mpirun >/dev/null 2>&1; then
-  echo "[setup] mpirun not found; installing Open MPI..."
-  sudo apt-get update
-  sudo apt-get install -y openmpi-bin
-fi
-echo "[setup] mpirun=$(command -v mpirun)"
-mpirun --version || true
+# if ! command -v mpirun >/dev/null 2>&1; then
+#   echo "[setup] mpirun not found; installing Open MPI..."
+#   sudo apt-get update
+#   sudo apt-get install -y openmpi-bin
+# fi
+# echo "[setup] mpirun=$(command -v mpirun)"
+# mpirun --version || true
 
 
 

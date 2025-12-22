@@ -27,8 +27,8 @@ pip install -e ./modelfunc
 #   sudo apt-get update
 #   sudo apt-get install -y openmpi-bin
 # fi
-sudo apt-get update
-sudo apt-get install -y openmpi-bin
+# sudo apt-get update
+# sudo apt-get install -y openmpi-bin
 
 
 
