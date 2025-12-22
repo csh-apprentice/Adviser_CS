@@ -49,7 +49,7 @@ We follow the instructions in [icesheetModels](https://github.com/fastice/iceshe
 ```
 
 # PISM
-We follow the instructions in [PISM] first run (https://www.pism.io/docs/manual/std-greenland/run-1.html).
+We follow the instructions in [PISM first run](https://www.pism.io/docs/manual/std-greenland/run-1.html).
 ```
 ./adviser run \
   --region us-west-2 \

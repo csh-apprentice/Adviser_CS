@@ -46,3 +46,48 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
     chmod +x first_run_new.sh
     ./first_run_new.sh
   "
+
+
+./adviser run \
+  --cluster 1146 \
+  --num-nodes 4 \
+  "
+    chmod +x debug.sh
+    ./debug.sh
+  "
+
+
+
+./adviser run \
+  --cluster 1153 \
+  "
+    git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
+    cd Adviser_CS/PISM
+    chmod +x setup_pism.sh
+    ./setup_pism.sh
+  "
+
+
+./adviser run \
+  --cluster 1153 \
+  "
+    chmod +x debug_new.sh
+    ./debug_new.sh
+  "
+
+./adviser run \
+  --cluster 1153 \
+  --num-nodes 4 \
+  "
+    chmod +x debug_new.sh
+    ./debug_new.sh
+  "
+
+./adviser run \
+  --cluster 1153 \
+  --num-nodes 4 \
+  "
+    cd Adviser_CS/PISM
+    chmod +x first_run_new.sh
+    ./first_run_new.sh
+  "
