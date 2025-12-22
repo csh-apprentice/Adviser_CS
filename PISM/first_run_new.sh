@@ -27,17 +27,17 @@ hosts="$(echo "$ADVISER_NODE_IPS" | tr ' ' '\n' | awk 'NF{print $0 ":'"$ranks_pe
 echo "[mpi] num_nodes=${num_nodes} ranks_per_node=${ranks_per_node} total_ranks=${total_ranks}"
 echo "[mpi] hosts=${hosts}"
 # Pick the default-route IPv4 interface (usually eth0 on AWS)
-iface=$(ip -o -4 route show to default | awk '{print $5; exit}')
-echo "[run] default-route iface=$iface"
-ip -o -4 addr show dev "$iface" || true
+# iface=$(ip -o -4 route show to default | awk '{print $5; exit}')
+# echo "[run] default-route iface=$iface"
+# ip -o -4 addr show dev "$iface" || true
 
-# --- Key part: pin OpenMPI to the right NIC & disable IPv6 (NO --mca flags) ---
-export OMPI_MCA_btl="tcp,self"
-export OMPI_MCA_btl_tcp_if_include="$iface"
-export OMPI_MCA_oob_tcp_if_include="$iface"
-export OMPI_MCA_oob_tcp_disable_family="ipv6"
-# optional: get all help messages (useful while debugging)
-export OMPI_MCA_orte_base_help_aggregate="0"
+# # --- Key part: pin OpenMPI to the right NIC & disable IPv6 (NO --mca flags) ---
+# export OMPI_MCA_btl="tcp,self"
+# export OMPI_MCA_btl_tcp_if_include="$iface"
+# export OMPI_MCA_oob_tcp_if_include="$iface"
+# export OMPI_MCA_oob_tcp_disable_family="ipv6"
+# # optional: get all help messages (useful while debugging)
+# export OMPI_MCA_orte_base_help_aggregate="0"
 
 mpirun -np "$total_ranks" -H "$hosts" \
     --map-by "ppr:${ranks_per_node}:node" --bind-to core \
@@ -51,6 +51,6 @@ mpirun -np "$total_ranks" -H "$hosts" \
         -extra_file ex_g20km_10ka.nc -extra_times -10000:100:0 \
         -extra_vars diffusivity,temppabase,tempicethk_basal,bmelt,tillwat,velsurf_mag,mask,thk,topg,usurf \
         -o g20km_10ka.nc &> out.g20km_10ka &
-else
-  echo "[run] worker node rank=${ADVISER_NODE_RANK:-unknown} (idle, waiting for mpirun)"
-fi
+# else
+#   echo "[run] worker node rank=${ADVISER_NODE_RANK:-unknown} (idle, waiting for mpirun)"
+# fi
