@@ -34,5 +34,5 @@ pip install pyyaml siphash24
 
 
 cd RWArchive/inversionInputs
-# bash runInv > inversion_3_20.log 2>&1
-bash runInv
+bash runInv > inversion_4_35.log 2>&1
+# bash runInv
