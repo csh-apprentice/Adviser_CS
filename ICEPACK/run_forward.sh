@@ -38,7 +38,7 @@ cd RWArchive/forwardModelInputs
 # log="forward_$(date +%Y%m%d_%H%M%S).log"
 bash runForwardExample |tee forward.log 2>&1
 cp forward.log ../../../../adviser_output
-cp -r forwardrun.melt000.57Gt
+cp -r forwardrun.melt000.57Gt ../../../../adviser_output
 
 # bash runForwardExample >"$log" 2>&1 || {
 #   rc=$?
