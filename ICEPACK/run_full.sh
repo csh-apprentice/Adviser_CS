@@ -32,14 +32,14 @@ pip install pyyaml siphash24
 # sudo apt-get install -y openmpi-bin
 
 cd RWArchive/inversionInputs
-bash runInv > inversion.log |tee inverse.log 2>&1
+bash runInv 2>&1 | tee inverse.log
 echo "[done] Finish running inverse and writing the output."
 
 cd ../..
 cd RWArchive/forwardModelInputs
 # bash runForwardExample > forward_$(date +%Y%m%d_%H%M%S).log 2>&1
 # log="forward_$(date +%Y%m%d_%H%M%S).log"
-bash runForwardExample |tee forward.log 2>&1
+bash runForwardExample 2>&1 | tee forward.log
 cp forward.log ../../../../adviser_output
 cp -r forwardrun.melt000.57Gt ../../../../adviser_output
 
