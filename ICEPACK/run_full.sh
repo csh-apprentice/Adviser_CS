@@ -35,6 +35,7 @@ cd RWArchive/inversionInputs
 bash runInv > inversion.log |tee inverse.log 2>&1
 echo "[done] Finish running inverse and writing the output."
 
+cd ../..
 cd RWArchive/forwardModelInputs
 # bash runForwardExample > forward_$(date +%Y%m%d_%H%M%S).log 2>&1
 # log="forward_$(date +%Y%m%d_%H%M%S).log"
