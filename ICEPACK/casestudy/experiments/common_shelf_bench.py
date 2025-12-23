@@ -28,8 +28,6 @@ import os
 @dataclass
 class RunStats:
     wall_s: float
-    wall_s_mesh: float
-    wall_s_solve: float
     ndofs_u: int
     ndofs_h: int
     notes: Dict[str, Any]
@@ -175,7 +173,6 @@ def solve_shelf_forward(
     t0 = time.time()
 
     mesh = make_mesh(out_dir, R=R, dx=dx)
-    t_mesh = time.time()
     h0, u0 = build_initial_fields(mesh, R=R)
 
     model = icepack.models.IceShelf()
@@ -211,8 +208,6 @@ def solve_shelf_forward(
     Q = h.function_space()
     stats = RunStats(
         wall_s=t1 - t0,
-        wall_s_mesh=t_mesh -t0,
-        wall_s_solve= t1-t_mesh,
         ndofs_u=V.dim(),
         ndofs_h=Q.dim(),
         notes={
@@ -264,7 +259,7 @@ def compute_metrics(u: firedrake.Function, h: firedrake.Function, gate_id: int =
 
 
 
-def save_run(out_dir: Path, cfg: Dict[str, Any], u: firedrake.Function, h: firedrake.Function, stats: RunStats, metrics: Dict[str, Any]) -> None:
+def save_run(out_dir: Path, cfg: Dict[str, Any], u: firedrake.Function, h: firedrake.Function, stats: RunStats, metrics: Dict[str, Any], save_fields: bool = False):
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -274,8 +269,9 @@ def save_run(out_dir: Path, cfg: Dict[str, Any], u: firedrake.Function, h: fired
 
     # Save fields for visualization (ParaView-friendly)
     # You can open these in ParaView or postprocess to make paper figs.
-    try:
-        firedrake.File(str(out_dir / "fields.pvd")).write(u, h)
-    except Exception as e:
-        # Some environments may not have VTK writers; keep going.
-        (out_dir / "write_warning.txt").write_text(f"VTK write failed: {e}\n")
+    if save_fields:
+        try:
+            firedrake.File(str(out_dir / "fields.pvd")).write(u, h)
+        except Exception as e:
+            # Some environments may not have VTK writers; keep going.
+            (out_dir / "write_warning.txt").write_text(f"VTK write failed: {e}\n")
