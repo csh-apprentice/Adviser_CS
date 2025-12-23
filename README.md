@@ -29,11 +29,12 @@ This script sets up the environment, installs required dependencies, and runs a 
 
 We follow the instructions in [icesheetModels](https://github.com/fastice/icesheetModels), but fixing some code issues caused by the dependcies version mismatch. 
 
-*Running the Demonstration*
+*Running the Demonstration [INVERSE]*
 ```
 ./adviser run \
   --region us-west-2 \
   --instance-type c6i.4xlarge \
+  --num-nodes 4 \
   --container-image-uri docker.io/firedrakeproject/firedrake-vanilla:2025-01 \
   -- \
   bash -lc '
@@ -47,6 +48,28 @@ We follow the instructions in [icesheetModels](https://github.com/fastice/iceshe
   '
 
 ```
+
+*Running the Demonstration [INVERSE]*
+```
+./adviser run \
+  --region us-west-2 \
+  --instance-type c6i.4xlarge \
+  --num-nodes 4 \
+  --container-image-uri docker.io/firedrakeproject/firedrake-vanilla:2025-01 \
+  -- \
+  bash -lc '
+    set -euxo pipefail
+    git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
+    cd Adviser_CS/ICEPACK
+    chmod +x run_inverse.sh
+    ./run_inverse.sh
+    chmod +x run_forward.sh
+    ./run_forward.sh
+  '
+
+```
+
+
 
 # PISM
 We follow the instructions in [PISM first run](https://www.pism.io/docs/manual/std-greenland/run-1.html).
