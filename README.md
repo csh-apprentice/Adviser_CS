@@ -54,13 +54,14 @@ We follow the instructions in [icesheetModels](https://github.com/fastice/iceshe
 ./adviser run \
   --region us-west-2 \
   --instance-type c6i.4xlarge \
-  --num-nodes 4 \
   --container-image-uri docker.io/firedrakeproject/firedrake-vanilla:2025-01 \
   -- \
   bash -lc '
     set -euxo pipefail
     git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
     cd Adviser_CS/ICEPACK
+    chmod +x run_inverse.sh
+    ./run_inverse.sh
     chmod +x run_forward.sh
     ./run_forward.sh
   '
