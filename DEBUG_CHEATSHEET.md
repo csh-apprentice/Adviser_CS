@@ -25,7 +25,7 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
 
 
 ./adviser run \
-  --cluster 1155 \
+  --cluster 1157 \
    --container-image-uri docker.io/firedrakeproject/firedrake-vanilla:2025-01 \
   "
     set -euo pipefail
@@ -34,6 +34,28 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
     cd Adviser_CS/ICEPACK
     chmod +x run_inverse.sh
     ./run_inverse.sh
+  "
+
+./adviser run \
+  --cluster 1157 \
+   --container-image-uri docker.io/firedrakeproject/firedrake-vanilla:2025-01 \
+  "
+    set -euo pipefail
+    cd Adviser_CS/ICEPACK
+    chmod +x run_forward.sh
+    ./run_forward.sh
+  "
+
+./adviser run \
+  --cluster 1157 \
+   --container-image-uri docker.io/firedrakeproject/firedrake-vanilla:2025-01 \
+  "
+    pwd
+    ls
+    cp icepack_debug.sh Adviser_CS/ICEPACK
+    cd Adviser_CS/ICEPACK
+    chmod +x icepack_debug.sh
+    ./icepack_debug.sh
   "
 
 
