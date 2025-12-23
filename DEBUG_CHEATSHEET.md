@@ -17,7 +17,7 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
 
 
 ./adviser run \
-  --cluster 1148 \
+  --cluster 1155 \
    --container-image-uri docker.io/firedrakeproject/firedrake-vanilla:2025-01 \
   "
     set -euo pipefail
@@ -69,7 +69,7 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
 
 
 ./adviser run \
-  --cluster 1153 \
+  --cluster 1155 \
   "
     chmod +x debug_new.sh
     ./debug_new.sh
@@ -86,6 +86,7 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
 ./adviser run \
   --cluster 1154 \
   "
+    ls
     cp first_run_debug.sh Adviser_CS/PISM
     cd Adviser_CS/PISM
     chmod +x first_run_debug.sh
@@ -96,6 +97,7 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
   --cluster 1154 \
   --num-nodes 4 \
   "
+    pwd
     cd Adviser_CS/PISM
     chmod +x first_run_new.sh
     ./first_run_new.sh
