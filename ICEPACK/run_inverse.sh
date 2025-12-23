@@ -35,4 +35,5 @@ pip install pyyaml siphash24
 
 cd RWArchive/inversionInputs
 bash runInv > inversion_4_35.log 2>&1
+echo "[Done] Finish running inverse and writing the output."
 # bash runInv
