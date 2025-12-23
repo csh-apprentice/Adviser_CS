@@ -68,6 +68,24 @@ We follow the instructions in [icesheetModels](https://github.com/fastice/iceshe
 
 ```
 
+*Running the Demonstration [INVERSE+FORWARD]*
+```
+./adviser run \
+  --region us-west-2 \
+  --instance-type c6i.4xlarge \
+  --container-image-uri docker.io/firedrakeproject/firedrake-vanilla:2025-01 \
+  -- \
+  bash -lc '
+    set -euxo pipefail
+    git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
+    cd Adviser_CS/ICEPACK
+    chmod +x run_full.sh
+    ./run_full.sh
+  '
+
+```
+
+
 
 
 # PISM
