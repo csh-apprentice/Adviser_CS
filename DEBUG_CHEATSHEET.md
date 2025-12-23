@@ -7,13 +7,51 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
   --num-nodes 4 \
   --instance-type t2.medium
 
+./adviser cluster create \
+  --short-name pism \
+  --cloud aws \
+  --region us-west-2 \
+  --instance-type t2.medium
+
+
+./adviser cluster create \
+  --short-name intel \
+  --cloud aws \
+  --region us-west-2 \
+  --instance-type c6i.2xlarge
+
+./adviser cluster create \
+  --short-name intel \
+  --cloud aws \
+  --region us-west-2 \
+  --instance-type c6i.2xlarge
+
 
 ./adviser cluster create \
   --short-name pism \
   --cloud aws \
   --region us-west-2 \
   --num-nodes 4 \
-  --instance-type c6i.4xlarge
+  --instance-type c7a.2xlarge
+
+./adviser run \
+  --cluster 1163 \
+   --container-image-uri docker.io/firedrakeproject/firedrake-vanilla:2025-01 \
+  "
+    set -euo pipefail
+    rm -rf Adviser_CS
+    git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
+    cd Adviser_CS/ICEPACK
+    chmod +x run_benchmark.sh
+    bash run_benchmark.sh 10 1000
+  "
+
+./adviser cluster create \
+  --short-name pism \
+  --cloud aws \
+  --region us-west-2 \
+  --num-nodes 4 \
+  --instance-type c7g.2xlarge
 
 
 ./adviser cluster create \
@@ -50,8 +88,6 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
   --cluster 1157 \
    --container-image-uri docker.io/firedrakeproject/firedrake-vanilla:2025-01 \
   "
-    pwd
-    ls
     cp icepack_debug.sh Adviser_CS/ICEPACK
     cd Adviser_CS/ICEPACK
     chmod +x icepack_debug.sh

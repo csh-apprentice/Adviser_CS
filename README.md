@@ -105,3 +105,20 @@ We follow the instructions in [PISM first run](https://www.pism.io/docs/manual/s
   '
 
 ```
+
+
+# BENCHMARK STUDY
+We also studies how different instance type affects the solver speed, and use the icepack forward problem as a benchmark problem.
+
+## Intel (baseline)
+```
+c6i.2xlarge   (8 vCPU)
+```
+## AMD (comparison)
+```
+c7a.2xlarge   (8 vCPU)
+```
+## Graviton (ARM)
+```
+c7g.2xlarge   (8 vCPU)
+```
