@@ -35,9 +35,10 @@ pip install pyyaml siphash24
 
 cd RWArchive/forwardModelInputs
 # bash runForwardExample > forward_$(date +%Y%m%d_%H%M%S).log 2>&1
-log="forward_$(date +%Y%m%d_%H%M%S).log"
-bash runForwardExample > forward_4_35.log 2>&1
-
+# log="forward_$(date +%Y%m%d_%H%M%S).log"
+bash runForwardExample |tee forward.log 2>&1
+cp forward.log ../../../../adviser_output
+cp -r forwardrun.melt000.57Gt
 
 # bash runForwardExample >"$log" 2>&1 || {
 #   rc=$?
