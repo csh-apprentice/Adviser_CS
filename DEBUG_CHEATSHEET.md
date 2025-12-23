@@ -9,6 +9,14 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
 
 
 ./adviser cluster create \
+  --short-name pism \
+  --cloud aws \
+  --region us-west-2 \
+  --num-nodes 4 \
+  --instance-type c6i.4xlarge
+
+
+./adviser cluster create \
   --short-name icepack \
   --cloud aws \
   --region us-west-2 \
@@ -30,7 +38,7 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
 
 
 ./adviser run \
-  --cluster 1154 \
+  --cluster 1156 \
   "
     git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
     cd Adviser_CS/PISM
@@ -84,9 +92,8 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
   "
 
 ./adviser run \
-  --cluster 1154 \
+  --cluster 1156 \
   "
-    ls
     cp first_run_debug.sh Adviser_CS/PISM
     cd Adviser_CS/PISM
     chmod +x first_run_debug.sh
@@ -103,3 +110,12 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
     ./first_run_new.sh
   "
 
+
+./adviser run \
+  --cluster 1156 \
+  --num-nodes 4 \
+  "
+    cd Adviser_CS/PISM
+    chmod +x first_run_new.sh
+    ./first_run_new.sh
+  "
