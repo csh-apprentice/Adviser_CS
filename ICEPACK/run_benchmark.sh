@@ -12,7 +12,6 @@ fi
 
 REPEAT_TIMES="$1"
 DX="$2"
-
 TOTAL_RUNS=$((REPEAT_TIMES + 1))
 
 echo "[Running] Case study benchmark"
@@ -21,23 +20,42 @@ echo "  dx           = ${DX}"
 echo "  total runs   = ${TOTAL_RUNS}"
 
 # -------------------------
+# Helper: choose python
+# -------------------------
+if command -v python >/dev/null 2>&1; then
+  PY=python
+elif command -v python3 >/dev/null 2>&1; then
+  PY=python3
+else
+  echo "[env] ERROR: neither python nor python3 found in PATH"
+  echo "[env] PATH=$PATH"
+  exit 127
+fi
+
+echo "[env] Using Python: $PY ($(command -v "$PY"))"
+$PY --version || true
+echo "[env] uname -m: $(uname -m)"
+
+# -------------------------
+# Helper: sudo (only if available)
+# -------------------------
+SUDO=""
+if command -v sudo >/dev/null 2>&1; then
+  SUDO="sudo"
+fi
+
+# -------------------------
 # Environment setup
 # -------------------------
-echo "[Running] Run case study..."
-
 echo "[env] Inspecting /home/firedrake (if it exists)..."
-
 if [[ -d /home/firedrake ]]; then
   ls -lah /home/firedrake
 else
   echo "[env] /home/firedrake does not exist"
 fi
 
-echo "[env] Detecting Firedrake environment..."
-
-
+echo "[env] Detecting Firedrake venv activate script (optional)..."
 ACTIVATED=0
-
 for CANDIDATE in \
   /home/firedrake/firedrake/bin/activate \
   /home/firedrake/firedrake-venv/bin/activate \
@@ -52,19 +70,50 @@ do
     break
   fi
 done
-
 if [[ "$ACTIVATED" -eq 0 ]]; then
-  echo "[env] No activate script found (this is OK for newer Firedrake images)"
+  echo "[env] No activate script found (OK for many Firedrake images)"
 fi
 
-python -m pip install --upgrade pip
-python -m pip install gmsh
+# Re-evaluate python after activation (some images put python in venv)
+if command -v python >/dev/null 2>&1; then
+  PY=python
+elif command -v python3 >/dev/null 2>&1; then
+  PY=python3
+fi
+echo "[env] Python after activation: $PY ($(command -v "$PY"))"
+$PY --version || true
 
-pip install -e ./icepack
-pip install -e ./modelfunc
+echo "[env] Verifying Firedrake import..."
+$PY - <<'EOF'
+import sys, platform
+print("[env] sys.executable:", sys.executable)
+print("[env] platform.machine():", platform.machine())
+import firedrake
+print("[env] firedrake OK:", firedrake.__file__)
+EOF
 
-sudo apt-get update
-sudo apt-get install -y openmpi-bin
+# -------------------------
+# Install dependencies (safe / consistent interpreter)
+# -------------------------
+echo "[env] Ensuring pip works for $PY..."
+$PY -m pip --version
+
+echo "[env] Installing Python deps..."
+$PY -m pip install --upgrade pip
+$PY -m pip install gmsh
+
+echo "[env] Installing local editable packages..."
+$PY -m pip install -e ./icepack
+$PY -m pip install -e ./modelfunc
+
+echo "[env] Installing OpenMPI if needed..."
+# openmpi is often already present; install only if mpirun is missing
+if ! command -v mpirun >/dev/null 2>&1; then
+  $SUDO apt-get update
+  $SUDO apt-get install -y openmpi-bin
+else
+  echo "[env] mpirun already present: $(command -v mpirun)"
+fi
 
 # Pin threading (important for reproducibility)
 export OMP_NUM_THREADS=1
@@ -79,8 +128,10 @@ cd casestudy
 
 OUT_BASE="../../../adviser_output"
 BENCH_DIR="${OUT_BASE}/dx_${DX}"
-
 mkdir -p "${BENCH_DIR}"
+
+echo "[env] Output base: ${BENCH_DIR}"
+echo "[env] Starting runs..."
 
 for ((i=0; i<${TOTAL_RUNS}; i++)); do
   if [[ "$i" -eq 0 ]]; then
@@ -89,7 +140,7 @@ for ((i=0; i<${TOTAL_RUNS}; i++)); do
     echo "[Measured] run ${i}/${REPEAT_TIMES}"
   fi
 
-  python -m experiments.run_forward \
+  $PY -m experiments.run_forward_bench \
     --out "${BENCH_DIR}/trial_$(printf "%03d" "$i")" \
     --dx "${DX}"
 done
