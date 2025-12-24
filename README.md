@@ -116,9 +116,47 @@ c6i.2xlarge   (8 vCPU)
 ```
 ## AMD (comparison)
 ```
-c7a.2xlarge   (8 vCPU)
+c7a.2xlarge   (8 vCPU) 0.41
 ```
 ## Graviton (ARM)
 ```
-c7g.2xlarge   (8 vCPU)
+c7g.2xlarge   (8 vCPU) 0.29$ 
+```
+## Intel “new gen”
+```
+c7i.2xlarge (8 vCPU)
+```
+## Useful “cost/perf” Intel variant: C7i-flex
+```
+c7i-flex.2xlarge
+```
+
+*Running the Benchmark [1 warm up and 100 experiements]*
+
+```
+./adviser run \
+  --container-image-uri docker.io/firedrakeproject/firedrake-vanilla-default:2025.10.2 \
+  --instance-type c7a.2xlarge \
+  "
+    set -euo pipefail
+    rm -rf Adviser_CS
+    git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
+    cd Adviser_CS/ICEPACK
+    chmod +x run_benchmark.sh
+    bash run_benchmark.sh 100 2000
+  "
+
+
+./adviser run \
+   --container-image-uri docker.io/firedrakeproject/firedrake:2025.10.2 \
+  --instance-type c7g.2xlarge \
+  "
+    set -euo pipefail
+    rm -rf Adviser_CS
+    git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
+    cd Adviser_CS/ICEPACK
+    chmod +x run_benchmark.sh
+    bash run_benchmark.sh 100 2000
+  "
+
 ```

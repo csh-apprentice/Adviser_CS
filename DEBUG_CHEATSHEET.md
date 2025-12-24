@@ -35,15 +35,15 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
   --instance-type c7a.2xlarge
 
 ./adviser run \
-  --cluster 1163 \
-   --container-image-uri docker.io/firedrakeproject/firedrake-vanilla:2025-01 \
+  --cluster 1165 \
+   --container-image-uri docker.io/firedrakeproject/firedrake:2025.10.2 \
   "
     set -euo pipefail
     rm -rf Adviser_CS
     git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
     cd Adviser_CS/ICEPACK
     chmod +x run_benchmark.sh
-    bash run_benchmark.sh 10 1000
+    bash run_benchmark.sh 100 2000
   "
 
 ./adviser cluster create \
