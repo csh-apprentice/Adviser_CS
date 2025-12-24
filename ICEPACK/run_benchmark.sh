@@ -57,7 +57,7 @@ for ((i=0; i<${TOTAL_RUNS}; i++)); do
     echo "[Measured] run ${i}/${REPEAT_TIMES}"
   fi
 
-  python -m experiments.run_forward_bench \
+  python -m experiments.run_forward \
     --out "${BENCH_DIR}/trial_$(printf "%03d" "$i")" \
     --dx "${DX}"
 done
