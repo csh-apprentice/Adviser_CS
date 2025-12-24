@@ -3,7 +3,37 @@ set -euo pipefail
 
 echo "[Running] Run case study..."
 
-source /home/firedrake/firedrake/bin/activate
+echo "[env] Inspecting /home/firedrake (if it exists)..."
+
+if [[ -d /home/firedrake ]]; then
+  ls -lah /home/firedrake
+else
+  echo "[env] /home/firedrake does not exist"
+fi
+
+echo "[env] Detecting Firedrake environment..."
+
+
+ACTIVATED=0
+
+for CANDIDATE in \
+  /home/firedrake/firedrake/bin/activate \
+  /home/firedrake/firedrake-venv/bin/activate \
+  /opt/firedrake/bin/activate \
+  /firedrake/bin/activate
+do
+  if [[ -f "$CANDIDATE" ]]; then
+    echo "[env] Activating Firedrake via: $CANDIDATE"
+    # shellcheck disable=SC1090
+    source "$CANDIDATE"
+    ACTIVATED=1
+    break
+  fi
+done
+
+if [[ "$ACTIVATED" -eq 0 ]]; then
+  echo "[env] No activate script found (this is OK for newer Firedrake images)"
+fi
 
 python -m pip install --upgrade pip
 python -m pip install gmsh
