@@ -106,6 +106,10 @@ echo "[env] venv Python: $PY ($(command -v "$PY"))"
 $PY --version
 $PY -m pip --version
 
+echo "[env] Installing system libs needed by gmsh..."
+$SUDO apt-get update
+$SUDO apt-get install -y libglu1-mesa libgl1
+
 echo "[env] Installing Python deps into venv..."
 $PY -m pip install -U pip
 $PY -m pip install gmsh
