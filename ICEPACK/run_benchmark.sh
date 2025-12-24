@@ -45,7 +45,7 @@ if command -v sudo >/dev/null 2>&1; then
 fi
 
 # -------------------------
-# Environment setup
+# Environment inspection + optional activation
 # -------------------------
 echo "[env] Inspecting /home/firedrake (if it exists)..."
 if [[ -d /home/firedrake ]]; then
@@ -74,7 +74,7 @@ if [[ "$ACTIVATED" -eq 0 ]]; then
   echo "[env] No activate script found (OK for many Firedrake images)"
 fi
 
-# Re-evaluate python after activation (some images put python in venv)
+# Re-evaluate python after activation (some images change PATH)
 if command -v python >/dev/null 2>&1; then
   PY=python
 elif command -v python3 >/dev/null 2>&1; then
@@ -83,7 +83,7 @@ fi
 echo "[env] Python after activation: $PY ($(command -v "$PY"))"
 $PY --version || true
 
-echo "[env] Verifying Firedrake import..."
+echo "[env] Verifying Firedrake import with base Python..."
 $PY - <<'EOF'
 import sys, platform
 print("[env] sys.executable:", sys.executable)
@@ -93,21 +93,28 @@ print("[env] firedrake OK:", firedrake.__file__)
 EOF
 
 # -------------------------
-# Install dependencies (safe / consistent interpreter)
+# Create an isolated venv for pip installs (avoid apt-managed pip issues)
+# Keep Firedrake available via --system-site-packages
 # -------------------------
-echo "[env] Ensuring pip works for $PY..."
+echo "[env] Creating local venv (with system-site-packages so Firedrake remains visible)..."
+$PY -m venv --system-site-packages .venv_bench
+# shellcheck disable=SC1091
+source .venv_bench/bin/activate
+PY=python
+
+echo "[env] venv Python: $PY ($(command -v "$PY"))"
+$PY --version
 $PY -m pip --version
 
-echo "[env] Installing Python deps..."
-$PY -m pip install --upgrade pip
+echo "[env] Installing Python deps into venv..."
+$PY -m pip install -U pip
 $PY -m pip install gmsh
 
-echo "[env] Installing local editable packages..."
+echo "[env] Installing local editable packages into venv..."
 $PY -m pip install -e ./icepack
 $PY -m pip install -e ./modelfunc
 
 echo "[env] Installing OpenMPI if needed..."
-# openmpi is often already present; install only if mpirun is missing
 if ! command -v mpirun >/dev/null 2>&1; then
   $SUDO apt-get update
   $SUDO apt-get install -y openmpi-bin
@@ -140,7 +147,7 @@ for ((i=0; i<${TOTAL_RUNS}; i++)); do
     echo "[Measured] run ${i}/${REPEAT_TIMES}"
   fi
 
-  $PY -m experiments.run_forward_bench \
+  $PY -m experiments.run_forward \
     --out "${BENCH_DIR}/trial_$(printf "%03d" "$i")" \
     --dx "${DX}"
 done
