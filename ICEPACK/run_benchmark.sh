@@ -106,9 +106,13 @@ echo "[env] venv Python: $PY ($(command -v "$PY"))"
 $PY --version
 $PY -m pip --version
 
-echo "[env] Installing system libs needed by gmsh..."
+echo "[env] Installing system libs needed by gmsh (OpenGL + X11/font deps)..."
 $SUDO apt-get update
-$SUDO apt-get install -y libglu1-mesa libgl1
+$SUDO apt-get install -y \
+  libglu1-mesa libgl1 \
+  libxft2 libxrender1 libxext6 libsm6 libice6 \
+  libfontconfig1
+
 
 echo "[env] Installing Python deps into venv..."
 $PY -m pip install -U pip
