@@ -186,7 +186,6 @@ for NP in ${NP_LIST}; do
     echo "[Measured] NP=${NP}, ${RUN_NAME}"
 
     # /usr/bin/time just prints to stderr; stats.json still has wall_s, etc.
-    /usr/bin/time -f "[time] NP=${NP} ${RUN_NAME} elapsed=%e sec" \
       "${MPIEXEC}" -n "${NP}" \
         "${PY}" -m experiments.run_forward \
           --out "${OUT_DIR}/${RUN_NAME}" \
