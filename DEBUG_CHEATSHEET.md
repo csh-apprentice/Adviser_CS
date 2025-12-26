@@ -183,12 +183,26 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
 ./adviser run \
   --region us-west-2 \
   --instance-type c6i.2xlarge \
-  --container-image-uri docker.io/firedrakeproject/firedrake-vanilla:2025-01 \
+  --container-image-uri docker.io/firedrakeproject/firedrake-vanilla-default:2025.10.2 \
   -- \
   bash -lc '
     set -euxo pipefail
     git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
     cd Adviser_CS/ICEPACK
-    chmod +x run_casestudy.sh
-    ./run_casestudy.sh
+    chmod +x test_parallel_scaling.sh
+    ./test_parallel_scaling.sh 1000
+  '
+
+
+./adviser run \
+  --region us-west-2 \
+  --instance-type c6i.2xlarge \
+  --container-image-uri docker.io/firedrakeproject/firedrake-vanilla-default:2025.10.2 \
+  -- \
+  bash -lc '
+    set -euxo pipefail
+    git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
+    cd Adviser_CS/ICEPACK
+    chmod +x run_benchmark_ranks.sh
+    ./run_benchmark_ranks.sh 1 1000
   '
