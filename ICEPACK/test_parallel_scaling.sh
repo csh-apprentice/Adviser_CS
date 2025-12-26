@@ -14,6 +14,37 @@ DX="${1:-2000}"                     # default dx=2000, allow override via arg
 NP_LIST="${NP_LIST:-"1 2 4 8"}"     # override via env: NP_LIST="1 2 4 8 16"
 MEASURE_RUNS="${MEASURE_RUNS:-1}"   # how many measured runs per NP (default 1)
 
+
+# -------------------------
+# Environment inspection + optional activation
+# -------------------------
+echo "[env] Inspecting /home/firedrake (if it exists)..."
+if [[ -d /home/firedrake ]]; then
+  ls -lah /home/firedrake
+else
+  echo "[env] /home/firedrake does not exist"
+fi
+
+echo "[env] Detecting Firedrake venv activate script (optional)..."
+ACTIVATED=0
+for CANDIDATE in \
+  /home/firedrake/firedrake/bin/activate \
+  /home/firedrake/firedrake-venv/bin/activate \
+  /opt/firedrake/bin/activate \
+  /firedrake/bin/activate
+do
+  if [[ -f "$CANDIDATE" ]]; then
+    echo "[env] Activating Firedrake via: $CANDIDATE"
+    # shellcheck disable=SC1090
+    source "$CANDIDATE"
+    ACTIVATED=1
+    break
+  fi
+done
+if [[ "$ACTIVATED" -eq 0 ]]; then
+  echo "[env] No activate script found (OK for many Firedrake images)"
+fi
+
 OUT_BASE="../../../adviser_output/mpi_scaling_dx_${DX}"
 
 echo "=============================================="
