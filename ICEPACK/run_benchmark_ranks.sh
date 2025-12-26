@@ -14,6 +14,8 @@ REPEAT_TIMES="$1"
 DX="$2"
 TOTAL_RUNS=$((REPEAT_TIMES + 1))
 
+...
+
 echo "[Running] Case study benchmark"
 echo "  repeat_times = ${REPEAT_TIMES}  (warm-up + ${REPEAT_TIMES} measured)"
 echo "  dx           = ${DX}"
@@ -79,30 +81,28 @@ if command -v python >/dev/null 2>&1; then
   PY=python
 elif command -v python3 >/dev/null 2>&1; then
   PY=python3
+else
+  echo "[env] ERROR: neither python nor python3 found in PATH after activation"
+  echo "[env] PATH=$PATH"
+  exit 127
 fi
+
 echo "[env] Python after activation: $PY ($(command -v "$PY"))"
 $PY --version || true
 
-echo "[env] Verifying Firedrake import with base Python..."
-$PY - <<'EOF'
-import sys, platform
-print("[env] sys.executable:", sys.executable)
-print("[env] platform.machine():", platform.machine())
-import firedrake
-print("[env] firedrake OK:", firedrake.__file__)
-EOF
+# -------------------------
+# Create + activate a local venv for gmsh / extra deps
+# -------------------------
+if [[ ! -d ".venv_bench" ]]; then
+  echo "[env] Creating local venv .venv_bench..."
+  $PY -m venv .venv_bench
+fi
 
-# -------------------------
-# Create an isolated venv for pip installs (avoid apt-managed pip issues)
-# Keep Firedrake available via --system-site-packages
-# -------------------------
-echo "[env] Creating local venv (with system-site-packages so Firedrake remains visible)..."
-$PY -m venv --system-site-packages .venv_bench
 # shellcheck disable=SC1091
 source .venv_bench/bin/activate
-PY=python
 
-echo "[env] venv Python: $PY ($(command -v "$PY"))"
+echo "[env] Using benchmark venv Python: $(command -v python)"
+PY=python
 $PY --version
 $PY -m pip --version
 
@@ -142,6 +142,58 @@ export OPENBLAS_NUM_THREADS=1
 export NUMEXPR_NUM_THREADS=1
 
 # -------------------------
+# Detect number of physical cores and set NP accordingly
+# -------------------------
+echo "[env] Detecting CPU topology for MPI ranks..."
+
+# 1) Get the list of allowed logical CPUs (respects cgroups/affinity)
+ALLOWED_LIST=$(grep Cpus_allowed_list /proc/self/status | awk '{print $2}')
+echo "[env] Cpus_allowed_list: ${ALLOWED_LIST:-<none>}"
+
+count_logical_from_list() {
+  local list="$1"
+  local total=0
+  IFS=',' read -ra parts <<< "$list"
+  for part in "${parts[@]}"; do
+    if [[ "$part" == *-* ]]; then
+      IFS='-' read -r start end <<< "$part"
+      total=$(( total + end - start + 1 ))
+    elif [[ -n "$part" ]]; then
+      total=$(( total + 1 ))
+    fi
+  done
+  echo "$total"
+}
+
+if [[ -n "$ALLOWED_LIST" && "$ALLOWED_LIST" != "0" ]]; then
+  LOGICAL_CPUS=$(count_logical_from_list "$ALLOWED_LIST")
+else
+  # Fallback: count processors in /proc/cpuinfo
+  LOGICAL_CPUS=$(grep -c '^processor' /proc/cpuinfo || echo 1)
+fi
+
+echo "[env] Logical CPUs visible: ${LOGICAL_CPUS}"
+
+# 2) Determine threads per core (if lscpu is available), else assume 2
+THREADS_PER_CORE=2
+if command -v lscpu >/dev/null 2>&1; then
+  tpc=$(lscpu | awk '/^Thread\(s\) per core:/ {print $4; exit}')
+  if [[ -n "$tpc" ]]; then
+    THREADS_PER_CORE="$tpc"
+  fi
+fi
+echo "[env] Threads per core (assumed/detected): ${THREADS_PER_CORE}"
+
+# 3) Physical cores = logical / threads_per_core (rounded up)
+PHYSICAL_CORES=$(( (LOGICAL_CPUS + THREADS_PER_CORE - 1) / THREADS_PER_CORE ))
+if (( PHYSICAL_CORES < 1 )); then
+  PHYSICAL_CORES=1
+fi
+
+NP="${PHYSICAL_CORES}"
+echo "[env] Using NP (MPI ranks) = ${NP} (one rank per physical core)"
+
+# -------------------------
 # Run loop
 # -------------------------
 cd casestudy
@@ -160,9 +212,10 @@ for ((i=0; i<${TOTAL_RUNS}; i++)); do
     echo "[Measured] run ${i}/${REPEAT_TIMES}"
   fi
 
-  $PY -m experiments.run_forward \
-    --out "${BENCH_DIR}/trial_$(printf "%03d" "$i")" \
-    --dx "${DX}"
+  ${MPIEXEC} -n "${NP}" \
+    "$PY" -m experiments.run_forward \
+      --out "${BENCH_DIR}/trial_$(printf "%03d" "$i")" \
+      --dx "${DX}"
 done
 
 echo "[Done] Benchmark finished."
