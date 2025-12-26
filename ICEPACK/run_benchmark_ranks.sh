@@ -14,7 +14,6 @@ REPEAT_TIMES="$1"
 DX="$2"
 TOTAL_RUNS=$((REPEAT_TIMES + 1))
 
-...
 
 echo "[Running] Case study benchmark"
 echo "  repeat_times = ${REPEAT_TIMES}  (warm-up + ${REPEAT_TIMES} measured)"
