@@ -36,6 +36,7 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
 
 ./adviser run \
   --cluster 1197 \
+  --cpu 8 \
    --container-image-uri docker.io/firedrakeproject/firedrake-vanilla-default:2025.10.2 \
   "
     set -euo pipefail
