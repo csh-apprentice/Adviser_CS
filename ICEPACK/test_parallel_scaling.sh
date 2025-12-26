@@ -154,6 +154,10 @@ export NUMEXPR_NUM_THREADS=1
 # -------------------------
 cd casestudy
 
+MAX_NP=$(nproc)
+echo "[env] nproc (max MPI ranks without oversubscribe): ${MAX_NP}"
+
+
 # -------------------------
 # Loop over NP values
 # -------------------------
