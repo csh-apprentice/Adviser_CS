@@ -130,17 +130,18 @@ $PY -m pip install -e ./icepack
 $PY -m pip install -e ./modelfunc
 
 # -------------------------
-# Ensure mpiexec exists (OpenMPI)
+# Force OpenMPI (match run_casestudy.sh)
 # -------------------------
 echo "[env] Installing (or refreshing) OpenMPI..."
 $SUDO apt-get update
 $SUDO apt-get install -y openmpi-bin
 
-MPIEXEC=${MPIEXEC:-mpiexec}
-echo "[env] MPI launcher: ${MPIEXEC} ($(command -v "${MPIEXEC}"))"
+MPIEXEC=mpiexec
+echo "[env] Using OpenMPI launcher: ${MPIEXEC} ($(command -v "${MPIEXEC}"))"
 
-# Allow oversubscription (safe if NP > nproc)
+# Allow oversubscribe safely if NP > nproc (harmless if not needed)
 export OMPI_MCA_rmaps_base_oversubscribe=1
+
 
 
 # -------------------------
