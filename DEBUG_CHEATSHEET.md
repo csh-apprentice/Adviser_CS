@@ -178,3 +178,17 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
     chmod +x first_run_new.sh
     ./first_run_new.sh
   "
+
+
+./adviser run \
+  --region us-west-2 \
+  --instance-type c6i.2xlarge \
+  --container-image-uri docker.io/firedrakeproject/firedrake-vanilla:2025-01 \
+  -- \
+  bash -lc '
+    set -euxo pipefail
+    git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
+    cd Adviser_CS/ICEPACK
+    chmod +x run_casestudy.sh
+    ./run_casestudy.sh
+  '
