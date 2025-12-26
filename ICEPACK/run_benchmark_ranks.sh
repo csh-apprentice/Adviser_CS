@@ -214,7 +214,9 @@ for ((i=0; i<${TOTAL_RUNS}; i++)); do
   ${MPIEXEC} -n "${NP}" \
     "$PY" -m experiments.run_forward \
       --out "${BENCH_DIR}/trial_$(printf "%03d" "$i")" \
-      --dx "${DX}"
+      --dx "${DX}" \
+      --num-timesteps 10 \
+      --final-time 10.0
 done
 
 echo "[Done] Benchmark finished."
