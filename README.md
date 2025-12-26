@@ -145,7 +145,7 @@ c7a.2xlarge 0.41$
 c7i.2xlarge 0.36$
 c7i-flex.2xlarge 0.34$
 c8a.2xlarge 0.43$
-c8i.2xlarge
+c8i.2xlarge 0.37$
 
 ### General-Purpose
 m4.large
@@ -187,7 +187,7 @@ t3a.large
 ```
 ./adviser run \
   --container-image-uri docker.io/firedrakeproject/firedrake-vanilla-default:2025.10.2 \
-  --instance-type c8a.2xlarge  \
+  --instance-type c8i.2xlarge  \
   "
     set -euo pipefail
     rm -rf Adviser_CS
