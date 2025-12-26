@@ -3,7 +3,8 @@ set -euo pipefail
 
 ##############################################
 # MPI Parallel Scaling Test for Icepack
-# - Warm-up + measured run per NP
+# - Environment setup similar to run_benchmark.sh
+# - Warm-up + measured runs per NP
 # - Pure MPI (threads pinned to 1)
 ##############################################
 
@@ -14,9 +15,45 @@ DX="${1:-2000}"                     # default dx=2000, allow override via arg
 NP_LIST="${NP_LIST:-"1 2 4 8"}"     # override via env: NP_LIST="1 2 4 8 16"
 MEASURE_RUNS="${MEASURE_RUNS:-1}"   # how many measured runs per NP (default 1)
 
+OUT_BASE="../../../adviser_output/mpi_scaling_dx_${DX}"
+
+echo "=============================================="
+echo "  MPI Parallel Scaling Test"
+echo "  dx          = ${DX}"
+echo "  NP list     = ${NP_LIST}"
+echo "  meas. runs  = ${MEASURE_RUNS} per NP"
+echo "  Output base = ${OUT_BASE}"
+echo "=============================================="
+
+mkdir -p "${OUT_BASE}"
 
 # -------------------------
-# Environment inspection + optional activation
+# Helper: choose python
+# -------------------------
+if command -v python >/dev/null 2>&1; then
+  PY=python
+elif command -v python3 >/dev/null 2>&1; then
+  PY=python3
+else
+  echo "[env] ERROR: neither python nor python3 found in PATH"
+  echo "[env] PATH=$PATH"
+  exit 127
+fi
+
+echo "[env] Using Python: $PY ($(command -v "$PY"))"
+$PY --version || true
+echo "[env] uname -m: $(uname -m)"
+
+# -------------------------
+# Helper: sudo (only if available)
+# -------------------------
+SUDO=""
+if command -v sudo >/dev/null 2>&1; then
+  SUDO="sudo"
+fi
+
+# -------------------------
+# Environment inspection + optional Firedrake activation
 # -------------------------
 echo "[env] Inspecting /home/firedrake (if it exists)..."
 if [[ -d /home/firedrake ]]; then
@@ -45,30 +82,60 @@ if [[ "$ACTIVATED" -eq 0 ]]; then
   echo "[env] No activate script found (OK for many Firedrake images)"
 fi
 
-OUT_BASE="../../../adviser_output/mpi_scaling_dx_${DX}"
+# Re-evaluate python after activation (some images change PATH)
+if command -v python >/dev/null 2>&1; then
+  PY=python
+elif command -v python3 >/dev/null 2>&1; then
+  PY=python3
+fi
+echo "[env] Python after activation: $PY ($(command -v "$PY"))"
+$PY --version || true
 
-echo "=============================================="
-echo "  MPI Parallel Scaling Test"
-echo "  dx          = ${DX}"
-echo "  NP list     = ${NP_LIST}"
-echo "  meas. runs  = ${MEASURE_RUNS} per NP"
-echo "  Output base = ${OUT_BASE}"
-echo "=============================================="
-
-mkdir -p "${OUT_BASE}"
+echo "[env] Verifying Firedrake import with base Python..."
+$PY - <<'EOF'
+import sys, platform
+print("[env] sys.executable:", sys.executable)
+print("[env] platform.machine():", platform.machine())
+import firedrake
+print("[env] firedrake OK:", firedrake.__file__)
+EOF
 
 # -------------------------
-# Ensure mpiexec exists
+# Create an isolated venv for pip installs
+# Keep Firedrake available via --system-site-packages
+# -------------------------
+echo "[env] Creating local venv (with system-site-packages so Firedrake remains visible)..."
+$PY -m venv --system-site-packages .venv_bench
+# shellcheck disable=SC1091
+source .venv_bench/bin/activate
+PY=python
+
+echo "[env] venv Python: $PY ($(command -v "$PY"))"
+$PY --version
+$PY -m pip --version
+
+echo "[env] Installing system libs needed by gmsh (OpenGL + X11/font deps)..."
+$SUDO apt-get update
+$SUDO apt-get install -y \
+  libglu1-mesa libgl1 \
+  libxft2 libxrender1 libxext6 libsm6 libice6 \
+  libfontconfig1
+
+echo "[env] Installing Python deps into venv..."
+$PY -m pip install -U pip
+$PY -m pip install gmsh
+
+echo "[env] Installing local editable packages into venv..."
+$PY -m pip install -e ./icepack
+$PY -m pip install -e ./modelfunc
+
+# -------------------------
+# Ensure mpiexec exists (OpenMPI)
 # -------------------------
 if ! command -v mpiexec >/dev/null 2>&1; then
   echo "[env] mpiexec not found — installing OpenMPI..."
-  if command -v sudo >/dev/null 2>&1; then
-    sudo apt-get update
-    sudo apt-get install -y openmpi-bin
-  else
-    apt-get update
-    apt-get install -y openmpi-bin
-  fi
+  $SUDO apt-get update
+  $SUDO apt-get install -y openmpi-bin
 fi
 
 MPIEXEC=${MPIEXEC:-mpiexec}
@@ -106,7 +173,7 @@ for NP in ${NP_LIST}; do
   echo "[Warm-up] NP=${NP}"
 
   "${MPIEXEC}" -n "${NP}" \
-    python -m experiments.run_forward \
+    "${PY}" -m experiments.run_forward \
       --out "${OUT_DIR}/warmup" \
       --dx "${DX}" \
       --fluidity-scale 1.0
@@ -121,7 +188,7 @@ for NP in ${NP_LIST}; do
     # /usr/bin/time just prints to stderr; stats.json still has wall_s, etc.
     /usr/bin/time -f "[time] NP=${NP} ${RUN_NAME} elapsed=%e sec" \
       "${MPIEXEC}" -n "${NP}" \
-        python -m experiments.run_forward \
+        "${PY}" -m experiments.run_forward \
           --out "${OUT_DIR}/${RUN_NAME}" \
           --dx "${DX}" \
           --fluidity-scale 1.0
