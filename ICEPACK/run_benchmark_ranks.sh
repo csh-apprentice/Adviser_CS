@@ -14,7 +14,6 @@ REPEAT_TIMES="$1"
 DX="$2"
 TOTAL_RUNS=$((REPEAT_TIMES + 1))
 
-
 echo "[Running] Case study benchmark"
 echo "  repeat_times = ${REPEAT_TIMES}  (warm-up + ${REPEAT_TIMES} measured)"
 echo "  dx           = ${DX}"
@@ -80,28 +79,30 @@ if command -v python >/dev/null 2>&1; then
   PY=python
 elif command -v python3 >/dev/null 2>&1; then
   PY=python3
-else
-  echo "[env] ERROR: neither python nor python3 found in PATH after activation"
-  echo "[env] PATH=$PATH"
-  exit 127
 fi
-
 echo "[env] Python after activation: $PY ($(command -v "$PY"))"
 $PY --version || true
 
-# -------------------------
-# Create + activate a local venv for gmsh / extra deps
-# -------------------------
-if [[ ! -d ".venv_bench" ]]; then
-  echo "[env] Creating local venv .venv_bench..."
-  $PY -m venv .venv_bench
-fi
+echo "[env] Verifying Firedrake import with base Python..."
+$PY - <<'EOF'
+import sys, platform
+print("[env] sys.executable:", sys.executable)
+print("[env] platform.machine():", platform.machine())
+import firedrake
+print("[env] firedrake OK:", firedrake.__file__)
+EOF
 
+# -------------------------
+# Create an isolated venv for pip installs (avoid apt-managed pip issues)
+# Keep Firedrake available via --system-site-packages
+# -------------------------
+echo "[env] Creating local venv (with system-site-packages so Firedrake remains visible)..."
+$PY -m venv --system-site-packages .venv_bench
 # shellcheck disable=SC1091
 source .venv_bench/bin/activate
-
-echo "[env] Using benchmark venv Python: $(command -v python)"
 PY=python
+
+echo "[env] venv Python: $PY ($(command -v "$PY"))"
 $PY --version
 $PY -m pip --version
 
@@ -111,7 +112,6 @@ $SUDO apt-get install -y \
   libglu1-mesa libgl1 \
   libxft2 libxrender1 libxext6 libsm6 libice6 \
   libfontconfig1
-
 
 echo "[env] Installing Python deps into venv..."
 $PY -m pip install -U pip
@@ -141,7 +141,7 @@ export OPENBLAS_NUM_THREADS=1
 export NUMEXPR_NUM_THREADS=1
 
 # -------------------------
-# Detect number of physical cores and set NP accordingly
+# Choose NP = number of physical cores (≈ vCPUs / threads_per_core)
 # -------------------------
 echo "[env] Detecting CPU topology for MPI ranks..."
 
@@ -171,7 +171,7 @@ else
   LOGICAL_CPUS=$(grep -c '^processor' /proc/cpuinfo || echo 1)
 fi
 
-echo "[env] Logical CPUs visible: ${LOGICAL_CPUS}"
+echo "[env] Logical CPUs visible (vCPUs): ${LOGICAL_CPUS}"
 
 # 2) Determine threads per core (if lscpu is available), else assume 2
 THREADS_PER_CORE=2
