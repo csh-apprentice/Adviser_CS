@@ -14,6 +14,19 @@ pip install -e ./modelfunc
 sudo apt-get update
 sudo apt-get install -y openmpi-bin
 
+echo "===== DEBUG: CPU & MPI ENV ====="
+echo "[debug] nproc: $(nproc)"
+
+echo "[debug] Cpus_allowed_list (current process):"
+grep Cpus_allowed_list /proc/self/status || echo "  (no Cpus_allowed_list)"
+
+echo "[debug] cgroup cpu.max:"
+cat /sys/fs/cgroup/cpu.max 2>/dev/null || echo "  (no cpu.max file)"
+
+echo "[debug] mpiexec path: $(command -v mpiexec || echo 'mpiexec not found')"
+echo "===== END DEBUG ====="
+
+
 cd casestudy
 # for a in 0.3 0.5 0.7 1.0 1.3 1.6 2.0; do
 #   python -m experiments.run_forward \
@@ -41,9 +54,22 @@ cd casestudy
 # done
 
 for np in 1 2 4 8; do
-  mpiexec -n $np \
+  echo ""
+  echo "===== MPI RUN np = ${np} ====="
+  mpiexec \
+    --report-bindings \
+    -n "${np}" \
     python -m experiments.run_forward \
       --out ../../../adviser_output/mpi_np_${np} \
       --fluidity-scale 1.0 \
       --dx 2000
 done
+
+# for np in 1 2 4 8; do
+#   echo ""
+#   echo "===== MPI RUN np = ${np} ====="
+#   mpiexec \
+#     --report-bindings \
+#     -n "${np}" \
+#     python -m experiments.run_forward ...
+# done

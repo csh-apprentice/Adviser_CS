@@ -132,14 +132,16 @@ $PY -m pip install -e ./modelfunc
 # -------------------------
 # Ensure mpiexec exists (OpenMPI)
 # -------------------------
-if ! command -v mpiexec >/dev/null 2>&1; then
-  echo "[env] mpiexec not found — installing OpenMPI..."
-  $SUDO apt-get update
-  $SUDO apt-get install -y openmpi-bin
-fi
+echo "[env] Installing (or refreshing) OpenMPI..."
+$SUDO apt-get update
+$SUDO apt-get install -y openmpi-bin
 
 MPIEXEC=${MPIEXEC:-mpiexec}
 echo "[env] MPI launcher: ${MPIEXEC} ($(command -v "${MPIEXEC}"))"
+
+# Allow oversubscription (safe if NP > nproc)
+export OMPI_MCA_rmaps_base_oversubscribe=1
+
 
 # -------------------------
 # Avoid thread oversubscription (pure MPI mode)
