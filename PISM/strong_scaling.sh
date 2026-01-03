@@ -51,7 +51,7 @@ fi
 echo "[run] NP_LIST=${NP_LIST}"
 
 # Where to copy results so adviser syncs them back
-OUT_ROOT="$HOME/adviser_output"
+OUT_ROOT="/home/ubuntu/sky_workdir/adviser_output/strong_scale"
 mkdir -p "${OUT_ROOT}"
 
 for np in ${NP_LIST}; do
@@ -66,10 +66,10 @@ for np in ${NP_LIST}; do
 
   ranks_per_node=$(( np / num_nodes ))
 
-  if (( ranks_per_node > slots_per_node )); then
-    echo "[warn] np=${np} implies ranks_per_node=${ranks_per_node} > slots_per_node=${slots_per_node}; skipping to avoid oversubscribe."
-    continue
-  fi
+#   if (( ranks_per_node > slots_per_node )); then
+#     echo "[warn] np=${np} implies ranks_per_node=${ranks_per_node} > slots_per_node=${slots_per_node}; skipping to avoid oversubscribe."
+#     continue
+#   fi
 
   echo "[mpi] np=${np} ranks_per_node=${ranks_per_node}"
 
