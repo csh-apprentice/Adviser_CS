@@ -117,8 +117,10 @@ We follow the instructions in [PISM first run](https://www.pism.io/docs/manual/s
     cd Adviser_CS/PISM
     chmod +x setup_pism.sh
     ./setup_pism.sh
-    chmod +x preprocess.sh
-    ./first_run_new.sh
+    chmod +x strong_scaling.sh
+    export NP_LIST="1 2 4 8 16" 
+    ./strong_scaling.sh
+    ls ~
   '
 
 ```
