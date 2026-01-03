@@ -32,16 +32,10 @@ num_nodes=$(
     | tr -d ' '
 )
 
-slots_per_node="$(nproc)"   # maximum ranks we allow per node
-hosts="$(
-  echo "${ADVISER_NODE_IPS}" \
-    | tr ' ' '\n' \
-    | awk -v slots="${slots_per_node}" 'NF{print $0 ":" slots}' \
-    | paste -sd, -
-)"
+# This is only used for the default NP_LIST; hosts are now built per-np.
+slots_per_node="$(nproc || echo 1)"
 
 echo "[mpi] num_nodes=${num_nodes} slots_per_node=${slots_per_node}"
-echo "[mpi] hosts=${hosts}"
 
 # NP_LIST is a space-separated list of TOTAL MPI ranks to test, e.g. "1 2 4 8 16"
 # If not set, default to using all cores on all nodes once.
@@ -52,7 +46,14 @@ echo "[run] NP_LIST=${NP_LIST}"
 
 # Where to copy results so adviser syncs them back
 OUT_ROOT="/home/ubuntu/sky_workdir/adviser_output"
-# mkdir -p "${OUT_ROOT}"
+mkdir -p "${OUT_ROOT}"
+
+# Helpful MPI env (optional but nice)
+export OMPI_MCA_rmaps_base_oversubscribe=1
+export OMP_NUM_THREADS=1
+export MKL_NUM_THREADS=1
+export OPENBLAS_NUM_THREADS=1
+export NUMEXPR_NUM_THREADS=1
 
 for np in ${NP_LIST}; do
   echo "==============================="
@@ -65,13 +66,16 @@ for np in ${NP_LIST}; do
   fi
 
   ranks_per_node=$(( np / num_nodes ))
-
-#   if (( ranks_per_node > slots_per_node )); then
-#     echo "[warn] np=${np} implies ranks_per_node=${ranks_per_node} > slots_per_node=${slots_per_node}; skipping to avoid oversubscribe."
-#     continue
-#   fi
-
   echo "[mpi] np=${np} ranks_per_node=${ranks_per_node}"
+
+  # Build hosts for THIS np, with exactly ranks_per_node slots per node
+  hosts="$(
+    echo "${ADVISER_NODE_IPS}" \
+      | tr ' ' '\n' \
+      | awk -v rpn="${ranks_per_node}" 'NF{print $0 ":" rpn}' \
+      | paste -sd, -
+  )"
+  echo "[mpi] hosts=${hosts}"
 
   # Unique file names per np to avoid clashes
   out_file="g20km_10ka_np${np}.nc"
@@ -97,8 +101,9 @@ for np in ${NP_LIST}; do
   # Copy outputs to adviser_output so they sync back
   echo "[run] Copying outputs for np=${np} to ${OUT_ROOT}"
   cp "${log_file}" "${OUT_ROOT}/"
-  # tar the NetCDF output
-  tar -czf "$OUT_ROOT/${out_file%.nc}.tar.gz" "$out_file"
+
+  # tar the NetCDF output (binary) so Adviser will sync it
+  tar -czf "${OUT_ROOT}/${out_file%.nc}.tar.gz" "${out_file}"
 
 done
 
