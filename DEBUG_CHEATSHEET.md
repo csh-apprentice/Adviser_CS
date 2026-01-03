@@ -206,3 +206,10 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
     chmod +x run_benchmark_ranks.sh
     ./run_benchmark_ranks.sh 1 1000
   '
+
+
+  ./adviser run \
+  --container-image-uri docker.io/firedrakeproject/firedrake-vanilla:2025-01 \
+  "date | tr ' :' '__' | sed 's/^/hello_from_adviser_at_/' | sudo tee adviser_output/debug_hello.txt && \
+   sudo ls -la adviser_output && \
+   sudo cat adviser_output/debug_hello.txt"
