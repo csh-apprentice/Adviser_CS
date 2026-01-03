@@ -106,6 +106,23 @@ We follow the instructions in [PISM first run](https://www.pism.io/docs/manual/s
 
 ```
 
+## Scaling Study - Strong Scaling
+```
+./adviser run \
+  --region us-west-2 \
+  --instance-type c6i.4xlarge \
+  -- \
+  bash -lc '
+    git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
+    cd Adviser_CS/PISM
+    chmod +x setup_pism.sh
+    ./setup_pism.sh
+    chmod +x preprocess.sh
+    ./first_run_new.sh
+  '
+
+```
+
 
 # BENCHMARK STUDY
 We also studies how different instance type affects the solver speed, and use the icepack forward problem as a benchmark problem.
