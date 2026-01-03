@@ -132,19 +132,22 @@ We follow the instructions in [PISM first run](https://www.pism.io/docs/manual/s
     cp strong_scaling.sh Adviser_CS/PISM
     cd Adviser_CS/PISM
     chmod +x strong_scaling.sh
-    export NP_LIST="1 2 4 8" 
+    export NP_LIST="1 4" 
     ./strong_scaling.sh
   '
 
 ./adviser run \
-  --cluster 1238 \
+  --cluster 1241 \
   --instance-type c6i.4xlarge \
   --num-nodes 2 \
   -- \
   bash -lc '
+    git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
     cd Adviser_CS/PISM
+    chmod +x setup_pism.sh
+    ./setup_pism.sh
     chmod +x strong_scaling.sh
-    export NP_LIST="16" 
+    export NP_LIST="8 16" 
     ./strong_scaling.sh
   '
 
@@ -154,10 +157,8 @@ We follow the instructions in [PISM first run](https://www.pism.io/docs/manual/s
   --num-nodes 4 \
   -- \
   bash -lc '
-    git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
+    cp strong_scaling.sh Adviser_CS/PISM
     cd Adviser_CS/PISM
-    chmod +x setup_pism.sh
-    ./setup_pism.sh
     chmod +x strong_scaling.sh
     export NP_LIST="32" 
     ./strong_scaling.sh
