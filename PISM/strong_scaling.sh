@@ -52,7 +52,7 @@ echo "[run] NP_LIST=${NP_LIST}"
 
 # Where to copy results so adviser syncs them back
 OUT_ROOT="/home/ubuntu/sky_workdir/adviser_output"
-mkdir -p "${OUT_ROOT}"
+# mkdir -p "${OUT_ROOT}"
 
 for np in ${NP_LIST}; do
   echo "==============================="
@@ -95,8 +95,8 @@ for np in ${NP_LIST}; do
   echo "[run] Finished PISM run with np=${np}, out=${out_file}, log=${log_file}"
 
   # Copy outputs to adviser_output so they sync back
-  echo "[run] Copying outputs for np=${np} to ${OUT_ROOT}"
-  cp "${out_file}" "${log_file}" "${OUT_ROOT}/"
+#   echo "[run] Copying outputs for np=${np} to ${OUT_ROOT}"
+#   cp "${out_file}" "${log_file}" "${OUT_ROOT}/"
 done
 
 echo "[run] All NP_LIST runs finished. Outputs in ${OUT_ROOT}"
