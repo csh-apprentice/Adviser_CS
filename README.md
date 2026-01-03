@@ -118,7 +118,7 @@ We follow the instructions in [PISM first run](https://www.pism.io/docs/manual/s
     chmod +x setup_pism.sh
     ./setup_pism.sh
     chmod +x strong_scaling.sh
-    export NP_LIST="1 2 4 8 16" 
+    export NP_LIST="1 2 4 8" 
     ./strong_scaling.sh
   '
 
@@ -132,7 +132,34 @@ We follow the instructions in [PISM first run](https://www.pism.io/docs/manual/s
     cp strong_scaling.sh Adviser_CS/PISM
     cd Adviser_CS/PISM
     chmod +x strong_scaling.sh
-    export NP_LIST="2 4 8 16" 
+    export NP_LIST="1 2 4 8" 
+    ./strong_scaling.sh
+  '
+
+./adviser run \
+  --cluster 1238 \
+  --instance-type c6i.4xlarge \
+  --num-nodes 2 \
+  -- \
+  bash -lc '
+    cd Adviser_CS/PISM
+    chmod +x strong_scaling.sh
+    export NP_LIST="16" 
+    ./strong_scaling.sh
+  '
+
+./adviser run \
+  --cluster 1239 \
+  --instance-type c6i.4xlarge \
+  --num-nodes 4 \
+  -- \
+  bash -lc '
+    git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
+    cd Adviser_CS/PISM
+    chmod +x setup_pism.sh
+    ./setup_pism.sh
+    chmod +x strong_scaling.sh
+    export NP_LIST="32" 
     ./strong_scaling.sh
   '
 
@@ -143,11 +170,13 @@ We follow the instructions in [PISM first run](https://www.pism.io/docs/manual/s
   --cpu 16 \
   -- \
   bash -lc '
-    cp strong_scaling.sh Adviser_CS/PISM
+    cp strong_scaling_debug.sh Adviser_CS/PISM
     cd Adviser_CS/PISM
     chmod +x strong_scaling_debug.sh
     ./strong_scaling_debug.sh
   '
+
+ncdump -h g20km_10ka_np2.nc | grep -E "run_stats:.+hour"
 
 ```
 
