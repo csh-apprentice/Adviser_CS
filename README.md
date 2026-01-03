@@ -120,8 +120,6 @@ We follow the instructions in [PISM first run](https://www.pism.io/docs/manual/s
     chmod +x strong_scaling.sh
     export NP_LIST="1 2 4 8 16" 
     ./strong_scaling.sh
-    ls ~
-    ls adviser_output
   '
 
 ```
