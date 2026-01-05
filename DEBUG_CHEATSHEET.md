@@ -209,7 +209,15 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
 
 
   ./adviser run \
-  --container-image-uri docker.io/firedrakeproject/firedrake-vanilla:2025-01 \
   "date | tr ' :' '__' | sed 's/^/hello_from_adviser_at_/' | sudo tee adviser_output/debug_hello.txt && \
    sudo ls -la adviser_output && \
-   sudo cat adviser_output/debug_hello.txt"
+   sudo cat adviser_output/debug_hello.txt &&\
+   pwd"
+
+
+  ./adviser cluster create \
+  --short-name pism \
+  --cloud aws \
+  --region us-west-2 \
+  --num-nodes 8 \
+  --instance-type c6i.4xlarge
