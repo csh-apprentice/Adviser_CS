@@ -89,7 +89,7 @@ for np in ${NP_LIST}; do
       -dx 10km -dy 10km \
       -Mz 201 -Mbz 21 -z_spacing equal -Lz 4000 -Lbz 2000 \
       -skip -skip_max 20 -grid.recompute_longitude_and_latitude false \
-      -ys -200 -ye 0 \
+      -ys -10000 -ye 0 \
       -surface given -surface_given_file pism_Greenland_5km_v1.1.nc \
       -front_retreat_file pism_Greenland_5km_v1.1.nc \
       -sia_e 3.0 \
