@@ -219,5 +219,26 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
   --short-name pism \
   --cloud aws \
   --region us-west-2 \
+  --num-nodes 1 \
+  --instance-type c6i.4xlarge
+
+  ./adviser cluster create \
+  --short-name pism \
+  --cloud aws \
+  --region us-west-2 \
+  --num-nodes 2 \
+  --instance-type c6i.4xlarge
+
+  ./adviser cluster create \
+  --short-name pism \
+  --cloud aws \
+  --region us-west-2 \
+  --num-nodes 4 \
+  --instance-type c6i.4xlarge
+
+  ./adviser cluster create \
+  --short-name pism \
+  --cloud aws \
+  --region us-west-2 \
   --num-nodes 8 \
   --instance-type c6i.4xlarge
