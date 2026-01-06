@@ -2,7 +2,6 @@
 set -euo pipefail
 
 
-## First Run
 
 
 cd $HOME/pism-stable/examples/std-greenland
