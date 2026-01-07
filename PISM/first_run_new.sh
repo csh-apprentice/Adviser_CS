@@ -7,14 +7,14 @@ set -euo pipefail
 
 cd $HOME/pism-stable/examples/std-greenland
 export PATH="$HOME/pism/bin:$PATH"
-./preprocess.sh
-
 
 # Only head runs mpirun tests
 if [[ "${ADVISER_NODE_RANK:-}" != "0" ]]; then
   echo "[run] worker node rank=${ADVISER_NODE_RANK:-unknown} idle (waiting for head mpirun)"
   exit 0
 fi
+
+./preprocess.sh
 
 echo "[run] head node"
 
