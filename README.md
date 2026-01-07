@@ -180,19 +180,34 @@ We follow the instructions in [PISM first run](https://www.pism.io/docs/manual/s
   '
 
 ./adviser run \
-  --cluster 1252 \
+  --cluster 1253 \
   --instance-type c6i.4xlarge \
   --num-nodes 8 \
+  -- \
+  bash -lc '
+    cp strong_scaling_debug.sh Adviser_CS/PISM
+    cd Adviser_CS/PISM
+    chmod +x strong_scaling_debug.sh
+    export NP_LIST="64" 
+    ./strong_scaling_debug.sh
+  '
+
+./adviser run \
+  --instance-type c6i.4xlarge \
+  --num-nodes 4 \
   -- \
   bash -lc '
     git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
     cd Adviser_CS/PISM
     chmod +x setup_pism.sh
     ./setup_pism.sh
+    cd Adviser_CS/PISM
     chmod +x strong_scaling.sh
-    export NP_LIST="64" 
+    export NP_LIST="32" 
     ./strong_scaling.sh
   '
+
+  1494
 
 ./adviser run \
   --cluster 1247 \
