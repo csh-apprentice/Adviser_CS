@@ -230,10 +230,10 @@ We follow the instructions in [PISM first run](https://www.pism.io/docs/manual/s
     cd Adviser_CS/PISM
     chmod +x setup_pism.sh
     ./setup_pism.sh
-    cd Adviser_CS/PISM
-    chmod +x strong_scaling.sh
+    chmod +x strong_scaling_repeated.sh
+    export REPEAT_LIST="1" 
     export NP_LIST="32" 
-    ./strong_scaling.sh
+    ./strong_scaling_repeated.sh
   '
 
   1494
