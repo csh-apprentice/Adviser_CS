@@ -3,6 +3,14 @@ set -euo pipefail
 
 echo "[setup] Updating apt and installing prerequisites..."
 
+# Only the head node runs mpirun tests
+if [[ "${ADVISER_NODE_RANK:-}" != "0" ]]; then
+  echo "[run] worker node rank=${ADVISER_NODE_RANK:-unknown} idle (waiting for head mpirun)"
+  exit 0
+fi
+
+echo "[run] head node"
+
 sudo apt-get update
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
   cmake pkg-config make g++ git \
