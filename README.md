@@ -139,34 +139,6 @@ We follow the instructions in [PISM first run](https://www.pism.io/docs/manual/s
 
   ./adviser run \
   --instance-type c6i.4xlarge \
-  --num-nodes 16 \
-  -- \
-  bash -lc '
-    set -euo pipefail
-    B="/home/ubuntu/sky_workdir/repo_ready"
-    mkdir -p "$(dirname "$B")"
-
-    if [[ "${ADVISER_NODE_RANK:-0}" == "0" ]]; then
-      rm -rf Adviser_CS
-      git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
-      touch "$B"
-    else
-      while [[ ! -f "$B" ]]; do sleep 2; done
-    fi
-
-    cd Adviser_CS/PISM
-    chmod +x setup_pism.sh strong_scaling_repeated.sh
-
-    ./setup_pism.sh
-
-    export REPEAT_LIST="1"
-    export NP_LIST="128"
-    ./strong_scaling_repeated.sh
-  '
-
-
-  ./adviser run \
-  --instance-type c6i.4xlarge \
   --num-nodes 4 \
   -- \
   bash -lc '
