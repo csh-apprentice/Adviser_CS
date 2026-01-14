@@ -7,10 +7,16 @@ cd "$HOME/pism-stable/examples/std-greenland"
 export PATH="$HOME/pism/bin:$PATH"
 
 # Only the head node runs mpirun tests
+# if [[ "${ADVISER_NODE_RANK:-}" != "0" ]]; then
+#   echo "[run] worker node rank=${ADVISER_NODE_RANK:-unknown} idle (waiting for head mpirun)"
+#   exit 0
+# fi
+
 if [[ "${ADVISER_NODE_RANK:-}" != "0" ]]; then
-  echo "[run] worker node rank=${ADVISER_NODE_RANK:-unknown} idle (waiting for head mpirun)"
-  exit 0
+  echo "[run] worker node rank=${ADVISER_NODE_RANK:-unknown} idle (keeping process alive for head mpirun)"
+  while true; do sleep 60; done
 fi
+
 
 ./preprocess.sh
 
