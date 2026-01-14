@@ -13,8 +13,9 @@ export PATH="$HOME/pism/bin:$PATH"
 # fi
 
 if [[ "${ADVISER_NODE_RANK:-}" != "0" ]]; then
-  echo "[run] worker node rank=${ADVISER_NODE_RANK:-unknown} idle (keeping process alive for head mpirun)"
-  while true; do sleep 60; done
+  echo "[run] worker rank=${ADVISER_NODE_RANK:-unknown} holding (will be released by head)"
+  # Name the process so head can pkill it later
+  exec -a adviser_worker_hold sleep 365d
 fi
 
 
@@ -27,6 +28,24 @@ if [[ -z "${ADVISER_NODE_IPS:-}" ]]; then
   echo "[error] ADVISER_NODE_IPS is not set; are you running under adviser?"
   exit 1
 fi
+
+
+release_workers() {
+  echo "[run] releasing workers..."
+  # ADVISER_NODE_IPS might be space-separated; normalize to one IP per line
+  while read -r ip; do
+    [[ -z "$ip" ]] && continue
+    # Skip self (head) — harmless if not skipped, but cleaner
+    if [[ "$ip" == "$(hostname -I | awk '{print $1}')" ]]; then
+      continue
+    fi
+    echo "[run] ssh $ip pkill adviser_worker_hold"
+    ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 "$ip" "pkill -f '^adviser_worker_hold' || true" || true
+  done < <(echo "${ADVISER_NODE_IPS:?ADVISER_NODE_IPS not set}" | tr ' ' '\n')
+}
+
+# Ensure we release even if the script errors out
+trap release_workers EXIT
 
 # Count nodes (handle spaces or newlines)
 num_nodes=$(
@@ -147,3 +166,5 @@ for i in "${!NP_ARR[@]}"; do
 done
 
 echo "[run] All NP_LIST runs finished. Outputs in ${OUT_ROOT}"
+
+
