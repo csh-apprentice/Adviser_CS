@@ -209,15 +209,15 @@ We follow the instructions in [PISM first run](https://www.pism.io/docs/manual/s
   '
 
 ./adviser run \
-  --cluster 1253 \
+  --cluster 1438 \
   --instance-type c6i.4xlarge \
-  --num-nodes 8 \
+  --num-nodes 16 \
   -- \
   bash -lc '
     cp strong_scaling_debug.sh Adviser_CS/PISM
     cd Adviser_CS/PISM
     chmod +x strong_scaling_debug.sh
-    export NP_LIST="64" 
+    export NP_LIST="128" 
     ./strong_scaling_debug.sh
   '
 
@@ -329,24 +329,24 @@ c8i.2xlarge 0.37$
 m4.large
 m5.large
 m5a.large
-m6a.2xlarge
-m6i.2xlarge
-m6id.2xlarge
-m7a.2xlarge
-m7i.2xlarge
-m7i-flex.2xlarge
-m8i.2xlarge
+m6a.2xlarge 0.35$
+m6i.2xlarge 0.38$
+m6id.2xlarge 0.47$
+m7a.2xlarge 0.46$
+m7i.2xlarge 0.40$
+m7i-flex.2xlarge 0.38$
+m8i.2xlarge 0.42$
 
 ### Memory-Optimized
 r4.large
 r5.large
 r5a.large
-r6a.2xlarge
-r6i.2xlarge
-r6id.2xlarge
-r7a.2xlarge
-r7i.2xlarge
-r8i.2xlarge
+r6a.2xlarge 0.45$
+r6i.2xlarge 0.50$
+r6id.2xlarge 0.60$
+r7a.2xlarge 0.61$
+r7i.2xlarge 0.53$
+r8i.2xlarge 0.56$
 
 ### Optional / Storage
 i3.large
@@ -360,7 +360,7 @@ t3a.large
 
 
 
-*Running the Benchmark [1 warm up and 100 experiements]*
+*Running the Benchmark [1 warm up and 20 experiements]*
 
 ```
 ./adviser run \
@@ -372,7 +372,7 @@ t3a.large
     git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
     cd Adviser_CS/ICEPACK
     chmod +x run_benchmark.sh
-    bash run_benchmark.sh 100 2000
+    bash run_benchmark.sh 20 1000
   "
 
 

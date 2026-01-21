@@ -243,3 +243,8 @@ DEBUG mode: we first create the cluster, then run the simulation from the existe
   --cloud aws \
   --region us-west-2 \
   --instance-type c6i.32xlarge
+
+  ./adviser run \
+  "date | tr ' :' '__' | sed 's/^/hello_from_adviser_at_/' | sudo tee adviser_output/debug_hello.txt && \
+   sudo ls -la adviser_output && \
+   sudo cat adviser_output/debug_hello.txt"
