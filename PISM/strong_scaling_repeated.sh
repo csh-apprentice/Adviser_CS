@@ -134,8 +134,8 @@ for i in "${!NP_ARR[@]}"; do
     echo "[run] Measured repeat ${r}/${nrep} for np=${np} (rep=${rep})"
 
     # Unique file names per np and repeat
-    out_file="g20km_10ka_np${np}_rep${rep}.nc"
-    log_file="out.g20km_10ka_np${np}_rep${rep}.log"
+    out_file="g10km_10ka_np${np}_rep${rep}.nc"
+    log_file="out.g10km_10ka_np${np}_rep${rep}.log"
 
     mpirun -np "${np}" -H "${hosts}" \
       --map-by "ppr:${ranks_per_node}:node" --bind-to core \

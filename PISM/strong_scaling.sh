@@ -80,8 +80,8 @@ for np in ${NP_LIST}; do
   echo "[mpi] hosts=${hosts}"
 
   # Unique file names per np to avoid clashes
-  out_file="g20km_10ka_np${np}.nc"
-  log_file="out.g20km_10ka_np${np}.log"
+  out_file="g10km_10ka_np${np}.nc"
+  log_file="out.g10km_10ka_np${np}.log"
 
   # --- LOW-I/O PISM RUN: only -o, no ts/extra files ---
   mpirun -np "${np}" -H "${hosts}" \
