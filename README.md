@@ -124,7 +124,7 @@ We follow the instructions in [PISM first run](https://www.pism.io/docs/manual/s
 
 ./adviser run \
   --region us-east-2 \
-  --instance-type hpc6a.48xlarge \
+  --instance-type hpc7a.48xlarge \
   --num-nodes 1 \
   --setup 'git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git \
     && cd Adviser_CS/PISM \
@@ -133,9 +133,10 @@ We follow the instructions in [PISM first run](https://www.pism.io/docs/manual/s
   -- \
   bash -lc '
     cd Adviser_CS/PISM
-    chmod +x strong_scaling.sh
-    export NP_LIST="32"
-    ./strong_scaling.sh
+    chmod +x strong_scaling_repeated.sh
+    export REPEAT_LIST="1 1 1 1 1 1 2" 
+    export NP_LIST="8 16 24 32 48 64 96" 
+    ./strong_scaling_repeated.sh
   '
 
 ./adviser run \
