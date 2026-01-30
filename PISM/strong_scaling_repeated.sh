@@ -6,17 +6,17 @@ set -euo pipefail
 cd "$HOME/pism-stable/examples/std-greenland"
 export PATH="$HOME/pism/bin:$PATH"
 
-# Only the head node runs mpirun tests
-# if [[ "${ADVISER_NODE_RANK:-}" != "0" ]]; then
-#   echo "[run] worker node rank=${ADVISER_NODE_RANK:-unknown} idle (waiting for head mpirun)"
-#   exit 0
-# fi
-
+Only the head node runs mpirun tests
 if [[ "${ADVISER_NODE_RANK:-}" != "0" ]]; then
-  echo "[run] worker rank=${ADVISER_NODE_RANK:-unknown} holding (will be released by head)"
-  # Name the process so head can pkill it later
-  exec -a adviser_worker_hold sleep 365d
+  echo "[run] worker node rank=${ADVISER_NODE_RANK:-unknown} idle (waiting for head mpirun)"
+  exit 0
 fi
+
+# if [[ "${ADVISER_NODE_RANK:-}" != "0" ]]; then
+#   echo "[run] worker rank=${ADVISER_NODE_RANK:-unknown} holding (will be released by head)"
+#   # Name the process so head can pkill it later
+#   exec -a adviser_worker_hold sleep 365d
+# fi
 
 
 ./preprocess.sh
@@ -30,22 +30,22 @@ if [[ -z "${ADVISER_NODE_IPS:-}" ]]; then
 fi
 
 
-release_workers() {
-  echo "[run] releasing workers..."
-  # ADVISER_NODE_IPS might be space-separated; normalize to one IP per line
-  while read -r ip; do
-    [[ -z "$ip" ]] && continue
-    # Skip self (head) — harmless if not skipped, but cleaner
-    if [[ "$ip" == "$(hostname -I | awk '{print $1}')" ]]; then
-      continue
-    fi
-    echo "[run] ssh $ip pkill adviser_worker_hold"
-    ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 "$ip" "pkill -f '^adviser_worker_hold' || true" || true
-  done < <(echo "${ADVISER_NODE_IPS:?ADVISER_NODE_IPS not set}" | tr ' ' '\n')
-}
+# release_workers() {
+#   echo "[run] releasing workers..."
+#   # ADVISER_NODE_IPS might be space-separated; normalize to one IP per line
+#   while read -r ip; do
+#     [[ -z "$ip" ]] && continue
+#     # Skip self (head) — harmless if not skipped, but cleaner
+#     if [[ "$ip" == "$(hostname -I | awk '{print $1}')" ]]; then
+#       continue
+#     fi
+#     echo "[run] ssh $ip pkill adviser_worker_hold"
+#     ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 "$ip" "pkill -f '^adviser_worker_hold' || true" || true
+#   done < <(echo "${ADVISER_NODE_IPS:?ADVISER_NODE_IPS not set}" | tr ' ' '\n')
+# }
 
-# Ensure we release even if the script errors out
-trap release_workers EXIT
+# # Ensure we release even if the script errors out
+# trap release_workers EXIT
 
 # Count nodes (handle spaces or newlines)
 num_nodes=$(
