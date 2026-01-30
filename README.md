@@ -122,20 +122,41 @@ We follow the instructions in [PISM first run](https://www.pism.io/docs/manual/s
     ./strong_scaling.sh
   '
 
-  ./adviser run \
-  --cluster 1334 \
-  --instance-type c6i.4xlarge \
-  --num-nodes 2 \
+./adviser run \
+  --region us-east-2 \
+  --instance-type hpc6a.48xlarge \
+  --num-nodes 1 \
+  --setup 'git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git \
+    && cd Adviser_CS/PISM \
+    && chmod +x setup_pism.sh \
+    && ./setup_pism.sh' \
   -- \
   bash -lc '
-    git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
     cd Adviser_CS/PISM
-    chmod +x setup_pism.sh
-    ./setup_pism.sh
     chmod +x strong_scaling.sh
-    export NP_LIST="16" 
+    export NP_LIST="32"
     ./strong_scaling.sh
   '
+
+./adviser run \
+  --region us-east-2 \
+  --instance-type hpc7a.12xlarge \
+  --num-nodes 8 \
+  --setup 'git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git \
+    && cd Adviser_CS/PISM \
+    && chmod +x setup_pism.sh \
+    && ./setup_pism.sh' \
+  -- \
+  bash -lc '
+    cd Adviser_CS/PISM
+    chmod +x strong_scaling_repeated.sh
+    export REPEAT_LIST="2" 
+    export NP_LIST="96" 
+    ./strong_scaling_repeated.sh
+  '
+
+    export REPEAT_LIST="1 1 1 1 1 1 3" 
+    export NP_LIST="8 16 24 32 48 64 96" 
 
   ./adviser run \
   --instance-type c6i.4xlarge \
