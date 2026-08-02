@@ -1,6 +1,6 @@
 # ICEPACK & PISM CASESTUDY
 ## Icepack Case Study (Synthetic Ice Shelf)
-ICEPACK/casestuy contains a small, headless (non-notebook) Icepack/Firedrake workload that is designed for PEARC-style platform evaluation. The main entry point is the script:
+ICEPACK/casestudy contains a small, headless (non-notebook) Icepack/Firedrake workload that is designed for PEARC-style platform evaluation. The main entry point is the script:
 ```
 run_casestudy.sh
 ```
@@ -27,7 +27,7 @@ This script sets up the environment, installs required dependencies, and runs a 
 
 ## Pine Island Basin Scale Model
 
-We follow the instructions in [icesheetModels](https://github.com/fastice/icesheetModels), but fixing some code issues caused by the dependcies version mismatch. 
+We follow the instructions in [icesheetModels](https://github.com/fastice/icesheetModels), but fixing some code issues caused by dependency version mismatches.
 
 *Running the Demonstration [INVERSE]*
 ```
@@ -258,8 +258,6 @@ We follow the instructions in [PISM first run](https://www.pism.io/docs/manual/s
     ./strong_scaling_repeated.sh
   '
 
-  1494
-
 ./adviser run \
   --cluster 1247 \
   --instance-type c6i.4xlarge \
@@ -308,7 +306,14 @@ ncdump -h g20km_10ka_np2.nc | grep -E "run_stats:.+hour"
 
 
 # BENCHMARK STUDY
-We also studies how different instance type affects the solver speed, and use the icepack forward problem as a benchmark problem.
+We also study how different instance types affect solver speed, using the Icepack forward problem as a benchmark. The entry points are:
+
+```
+ICEPACK/run_benchmark_all_cores.sh   <repeat_times> <dx>   # MPI across all physical cores
+ICEPACK/run_benchmark_single_core.sh <repeat_times> <dx>   # single-core variant
+```
+
+Each performs one warm-up run followed by `<repeat_times>` measured runs at mesh resolution `<dx>` (meters).
 
 ## Intel (baseline)
 ```
@@ -382,7 +387,7 @@ t3a.large
 
 
 
-*Running the Benchmark [1 warm up and 20 experiements]*
+*Running the Benchmark [1 warm-up and 20 experiments, dx = 1000 m]*
 
 ```
 ./adviser run \
@@ -393,8 +398,8 @@ t3a.large
     rm -rf Adviser_CS
     git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
     cd Adviser_CS/ICEPACK
-    chmod +x run_benchmark.sh
-    bash run_benchmark.sh 20 1000
+    chmod +x run_benchmark_all_cores.sh
+    bash run_benchmark_all_cores.sh 20 1000
   "
 
 
@@ -406,15 +411,12 @@ t3a.large
     rm -rf Adviser_CS
     git clone --recurse-submodules https://github.com/csh-apprentice/Adviser_CS.git
     cd Adviser_CS/ICEPACK
-    chmod +x run_benchmark.sh
-    bash run_benchmark.sh 100 2000
-  "
-
-
-./adviser run \
-  --instance-type c7g.2xlarge \
-  "
-    echo "hello"
+    chmod +x run_benchmark_all_cores.sh
+    bash run_benchmark_all_cores.sh 100 2000
   "
 
 ```
+
+# License
+
+This repository is released under the University of Illinois/NCSA Open Source License; see [LICENSE](LICENSE).
