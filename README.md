@@ -1,6 +1,15 @@
-# ICEPACK & PISM CASESTUDY
+# Adviser Case Studies: Icepack & PISM
+
+Workflow definitions, environment specifications, and scaling scripts for the paper *"Adviser: A Template-Based Multi-Cloud Platform for Scientific and ML Workflows"* (S. Cheng, M. A. Laurenzano, B. Strauch, T. A. Ellis, K. Wadhwani, D. A. B. Hyde; under review at the WORKS 2026 workshop, held in conjunction with SC26).
+
+Paper-to-repo map:
+- `ICEPACK/run_benchmark_all_cores.sh` (MPI across all physical cores; `run_benchmark_single_core.sh` is the single-core variant) → instance-type runtime/cost study (Fig. 4, Sec. V-A)
+- `ICEPACK/run_inverse.sh`, `run_forward.sh`, `run_full.sh` (Pine Island Glacier inversion + 200-year forward run) → Fig. 5, Sec. V-A
+- `PISM/setup_pism.sh` + `PISM/first_run_new.sh` (Greenland spin-up) → Fig. 6, Sec. V-B
+- `PISM/strong_scaling.sh` / `strong_scaling_repeated.sh` (hpc7a Scale-up vs. Scale-out study) → Table II, Sec. V-B
+
 ## Icepack Case Study (Synthetic Ice Shelf)
-ICEPACK/casestudy contains a small, headless (non-notebook) Icepack/Firedrake workload that is designed for PEARC-style platform evaluation. The main entry point is the script:
+ICEPACK/casestudy contains a small, headless (non-notebook) Icepack/Firedrake workload that is designed for platform evaluation. The main entry point is the script:
 ```
 run_casestudy.sh
 ```

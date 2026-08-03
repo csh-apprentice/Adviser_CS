@@ -47,7 +47,7 @@ fi
 echo "[run] NP_LIST=${NP_LIST}"
 
 # Where to copy results so adviser syncs them back
-OUT_ROOT="/home/ubuntu/sky_workdir/adviser_output"
+OUT_ROOT="${HOME}/sky_workdir/adviser_output"
 mkdir -p "${OUT_ROOT}"
 
 # Helpful MPI env (optional but nice)

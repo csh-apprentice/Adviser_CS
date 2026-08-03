@@ -90,7 +90,7 @@ fi
 
 # Where to copy results so adviser syncs them back
 # NOTE: keep it flat (no subdirs) to avoid FS limitations
-OUT_ROOT="/home/ubuntu/sky_workdir/adviser_output"
+OUT_ROOT="${HOME}/sky_workdir/adviser_output"
 mkdir -p "${OUT_ROOT}"
 
 # Helpful MPI env

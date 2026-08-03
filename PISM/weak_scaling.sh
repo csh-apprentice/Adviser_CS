@@ -54,7 +54,7 @@ echo "[run] NP_LIST (weak scaling) = ${NP_LIST}"
 echo "[run] Reference: np_ref=${np_ref}, dx_ref=${dx_ref_km} km"
 
 # Where to copy results so adviser syncs them back
-OUT_ROOT="/home/ubuntu/sky_workdir/adviser_output"
+OUT_ROOT="${HOME}/sky_workdir/adviser_output"
 mkdir -p "${OUT_ROOT}"
 
 # Helpful MPI env
